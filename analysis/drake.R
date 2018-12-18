@@ -18,7 +18,7 @@ read_schaefer <- function(file, data_type) {
 
 schaefer_template <- drake_plan(
   schaefer_file = file_in("analysis/data/raw_data/schaefer_teb_rpc_ZZZ.csv"),
-  scahefer = read_and_interpolate(schaefer_file_ZZZ, 2050, 2100) %>%
+  schaefer = read_and_interpolate(schaefer_file_ZZZ, 2050, 2100) %>%
     # Convert cumulative emissions to annual
     dplyr::mutate(value = c(0, diff(value))) %>%
     create_scenario(cc = ., ch4_frac = 0)
@@ -37,7 +37,7 @@ hope_template <- drake_plan(
   hope_co2_file = file_in("analysis/data/raw_data/hope_2016_MtCO2_ZZZ.csv"),
   hope = create_scenario(
     co2 = read_and_interpolate(hope_co2_file_ZZZ, 2012, 2100, scale = mtco2_gtc),
-    ch4 = read_and_interpolate(hope_ch4_file_ZZZ, 2012, 2100, scale = mtch4_gtc)
+    ch4 = read_and_interpolate(hope_ch4_file_ZZZ, 2012, 2100, scale = 1)
   )
 )
 
@@ -47,7 +47,14 @@ hope_plan <- evaluate_plan(
   values = c("lo", "mean", "hi")
 )
 
-scenarios_plan <- bind_plans(schaefer_plan, hope_plan)
+baseline_plan <- drake_plan(
+  no_permafrost_rcp45 = readr::read_csv(
+    system.file("input/emissions/RCP45_emissions.csv", package = "hector"),
+    skip = 3
+  )
+)
+
+scenarios_plan <- bind_plans(schaefer_plan, hope_plan, baseline_plan)
 combined_plan <- scenarios_plan %>%
   dplyr::filter(!grepl("_file_", target)) %>%
   gather_plan(target = "scenario_list") %>%
@@ -60,8 +67,21 @@ plan <- bind_plans(scenarios_plan, combined_plan)
 config <- drake_config(plan)
 make(plan)
 
+########################
+# An exploratory plot.
+# TODO: This will eventually be merged into drake plan above
+
 readd(all_scenarios) %>%
-  dplyr::filter(Date > 1900, Date <= 2100, !grepl("schaefer", scenario)) %>%
+  dplyr::filter(
+    Date > 1900,
+    Date <= 2100,
+    !grepl("schaefer", scenario)
+  ) %>%
+  dplyr::select(Date, scenario, ffi_emissions, CH4_emissions) %>%
+  tidyr::gather(variable, value, -Date, -scenario) %>%
   ggplot() +
-  aes(x = Date, y = ffi_emissions, color = scenario) +
-  geom_line()
+  aes(x = Date, y = value, color = scenario) +
+  geom_line() +
+  facet_grid(variable ~ ., scales = "free_y")
+
+ggsave("analysis/figures/permafrost_scenarios.png", width = 6, height = 5)
