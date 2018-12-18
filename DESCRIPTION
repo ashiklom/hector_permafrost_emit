@@ -1,0 +1,19 @@
+Package: hector_permafrost_emit
+Title: Sensitivity of Hector model to permafrost emissions
+Version: 0.0.0.9000
+Authors@R:
+    person(given = "Alexey",
+           family = "Shiklomanov",
+           role = c("aut", "cre"),
+           email = "alexey.shiklomanov@gmail.com")
+Description: Source code for Hector permafrost emissions paper
+License: MIT + file LICENSE
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Imports:
+    bookdown,
+    hector
+Suggests: 
+    testthat
+RoxygenNote: 6.1.1
