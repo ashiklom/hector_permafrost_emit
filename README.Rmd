@@ -24,3 +24,8 @@ You can install the development version of `hector_permafrost_emit` from GitHub 
 # install.packages("devtools")
 devtools::install_github("ashiklom/hector_permafrost_emit")
 ```
+
+## Data description
+
+- `analysis/data/raw_data/schaefer_teb_rpc_(min/max/mean).csv` -- Raw, digitized versions of Figure 5c (Ensemble mean and uncertainty of permafrost C respiration) in [@schaefer_2011_amount]. Original figure is `analysis/data/raw_data/schaefer_teb_timeseries.gif`. These results were digitized using WebPlotDigitizer (https://apps.automeris.io/wpd/), and interpolated to annual resolution (using R `stats::spline` function).
+    - [@schaefer_2011_amount] assume only CO2 emissions. So we add this as an extra anthropogenic CO2 flux.

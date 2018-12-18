@@ -46,12 +46,23 @@ Permafrost carbon sink:
 
 ## Permafrost emissions scenarios
 
+For all scenarios, we added the emission as a combination of fossil fuel CO2 emissions (`ffi_emissions` column in Hector) and methane emissions (`CH4_emissions` column in Hector).
+Where these were explicitly separated, we added them accordingly.
+Where they were presented only in terms of C, we did ??? 
+
 Digitized scenarios from [@schaefer_2011_amount].
+SiBCASA model predictions of CO2 emissions (permafrost respiration; $R_{pc}$; note -- no methane!) through 2300.
+These results were digitized using WebPlotDigitizer (https://apps.automeris.io/wpd/), and interpolated to annual resolution (using R `stats::spline` function).
+
+Digitized scenarios from [@hope_2015_economic].
+CO2 and CH4 emissions from SiBCASA model.
+
+[@schuur_2009_effect] -- Estimate 0.8 - 1.1 Pg C yr-1.
 
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
 - 500 Gt C in loess that could be completely emitted by 2100 (plus other C sources).
 - 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years. Combine with data on permafrost spatial extent, density, etc. to generate estimates (but can back-calculate from 500 Gt C above?)
- 
+
 # Results
 
 ```{r get-data, eval = FALSE}
