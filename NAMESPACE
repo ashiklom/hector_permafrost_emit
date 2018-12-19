@@ -2,3 +2,4 @@
 
 export(create_scenario)
 export(read_and_interpolate)
+export(run_hector_emissions)

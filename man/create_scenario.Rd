@@ -5,9 +5,9 @@
 \title{Create a Hector emissions scenario}
 \usage{
 create_scenario(cc = NULL, ch4_frac = NULL, co2 = NULL, ch4 = NULL,
-  base_scenario = "RCP45",
+  base_scenario_data = NULL, base_scenario = "RCP45",
   base_scenario_file = system.file(paste0("input/emissions/",
-  base_scenario, "_emissions.csv"), package = "hector"))
+  base_scenario, "_emissions.csv"), package = "hector"), ...)
 }
 \arguments{
 \item{cc}{`data.frame` of total carbon (C) emissions, with columns
@@ -20,10 +20,17 @@ be either 1 or `nrow(cc)`.}
 
 \item{ch4}{`data.frame` of CH4 emissions (same structure as `cc`)}
 
+\item{base_scenario_data}{`data.frame` containing baseline
+scenario, onto which CO2 and CH4 emissions will be added. If
+`NULL` (default), read from `base_scenario_file`}
+
 \item{base_scenario}{Character describing base scenario (default = "RCP45").}
 
 \item{base_scenario_file}{Path to base emissions file (default is
 `hector` package RCP 4.5 emissions file).}
+
+\item{...}{Additional arguments to [readr::read_csv()] for reading
+scenario file}
 }
 \value{
 `data.frame` containing Hector emissions, with additional
