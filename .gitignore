@@ -1,1 +1,7 @@
 .drake
+
+# Figures are derived from code
+analysis/figures/
+
+# Hector log files
+logs/
