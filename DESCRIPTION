@@ -1,4 +1,4 @@
-Package: hector_permafrost_emit
+Package: hector.permafrost.emit
 Title: Sensitivity of Hector model to permafrost emissions
 Version: 0.0.0.9000
 Authors@R:

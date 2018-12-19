@@ -11,11 +11,11 @@ This repository contains the source code and raw manuscript files for the Hector
 
 ## Installation
 
-You can install the development version of `hector_permafrost_emit` from GitHub with:
+You can install the development version of `hector.permafrost.emit` from GitHub with:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("ashiklom/hector_permafrost_emit")
+devtools::install_github("ashiklom/hector.permafrost.emit")
 ```
 
 ## Data description

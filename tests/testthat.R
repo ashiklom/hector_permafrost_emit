@@ -1,4 +1,4 @@
 library(testthat)
-library(hector_permafrost_emit)
+library(hector.permafrost.emit)
 
-test_check("hector_permafrost_emit")
+test_check("hector.permafrost.emit")
