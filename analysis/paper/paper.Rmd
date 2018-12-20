@@ -34,8 +34,30 @@ library(hector.permafrost.emit) # Or use devtools::load_all('.', quiet = T) if y
 
 # Introduction
 
-Permafrost carbon sink:
+Climate change is a problem (CITE: IPCC, NCA, etc.).
+Important to reduce carbon emissions to meet temperature targets.
+The extent of anthropogenic emissions reduction depends on what how much help (or push-back) we get from the physical and biological Earth systems.
 
+Permafrost is an important C reservoir.
+There are an estimated 500 Gt C in organic matter buried by frozen loess in the north plains of Siberia and Central Alaska [@zimov_2006_climate_change], and an additional 400 Gt C in other permafrost (CITE; see ref in Zimov), and XXX more in peat (CITE).
+This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes (REF).
+These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (???) times faster than the global average (REF).
+Projections of permafrost C emissions vary.
+[@schuur_2009_effect] estimate 0.8 - 1.1 Pg C yr-1.
+Back-of-the-envelope estimates from [@zimov_2006_climate_change]: 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
+
+Several studies have attempted to evaluate the potential economic impacts of current and future permafrost C emissions.
+@hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
+They found that XXX.
+Similarly, @gonzalez-eguino_2016_significant used the DICE (TODO: write in full) model to XXX.
+
+(Paragraph on simple climate models.)
+Hector [@hartin_2015_simple].
+However, Hector does not have an explicit representation of permafrost C emissions.
+In this study, we investigate whether the additional complexity and parametric and structural uncertainty of an explicit representation of permafrost may be warranted in Hector.
+To do this, we evaluate the sensitivity of climate variables (as predicted by Hector) to several different exogenous scenarios of permafrost C emissions.
+
+Some more relevant references:
 - [@zimov_2006_climate_change]
 - [@treat_2013_permafrost_carbon_bomb]
 - [@schuur_2015_climate; @schuur_2011_climate_change; @schaefer_2014_impact; @schaefer_2011_amount; @lee_2011_rate; @kuhry_2010_potential; @kessler_2017_estimating; @hope_2015_economic; @drake_2015_ancient; @burke_2017_quantifying]
@@ -43,6 +65,9 @@ Permafrost carbon sink:
 # Methods
 
 ## Model description: Hector
+
+Hector [@hartin_2015_simple,@hartin_2016_ocean].
+Simple climate model.
 
 ## Permafrost emissions scenarios
 
