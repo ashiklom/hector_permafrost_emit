@@ -7,6 +7,7 @@
 emissions2ini(emissions, base_ini = system.file("input/hector_rcp45.ini",
   package = "hector"),
   replace_string = "emissions/RCP45_emissions\\\\.csv",
+  replace_exo = "exo_emissions.*=0",
   emissions_outfile = tempfile(fileext = ".csv"),
   ini_outfile = tempfile(fileext = ".ini"))
 }
@@ -18,6 +19,10 @@ INI file.}
 
 \item{replace_string}{Regular expression for emissions string to
 replace. Default is `"emissions/RCP45_emissions\\.csv"`.}
+
+\item{replace_exo}{Regular expression for exogenous emissions. This
+will be deleted because, by default, we pass two values, not a
+CSV file. Default = `"exo_emissions.*=0"`}
 
 \item{emissions_outfile}{Target output emissions CSV file. Default
 = `tempfile(fileext = ".csv")`.}

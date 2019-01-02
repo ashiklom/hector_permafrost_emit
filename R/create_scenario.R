@@ -62,17 +62,15 @@ create_scenario <- function(cc = NULL, ch4_frac = NULL,
   }
 
   stopifnot(
-    is.data.frame(base_scenario_data),
-    "ffi_emissions" %in% colnames(base_scenario_data),
-    "CH4_emissions" %in% colnames(base_scenario_data)
+    is.data.frame(base_scenario_data)
   )
 
   new_scenario <- base_scenario_data
 
   co2_years <- new_scenario[["Date"]] %in% co2[["year"]]
-  new_scenario[co2_years, "ffi_emissions"] <-
-    new_scenario[co2_years, "ffi_emissions"] + co2[["value"]]
-  
+  new_scenario[["exo_emissions"]] <- rep(0.0, NROW(new_scenario))
+  new_scenario[co2_years, "exo_emissions"] <- co2[["value"]]
+
   ch4_years <- new_scenario[["Date"]] %in% ch4[["year"]]
   new_scenario[ch4_years, "CH4_emissions"] <-
     new_scenario[ch4_years, "CH4_emissions"] + ch4[["value"]]

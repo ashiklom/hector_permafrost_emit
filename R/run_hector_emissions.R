@@ -18,6 +18,9 @@ run_hector_emissions <- function(emissions, ...) {
 #'   INI file.
 #' @param replace_string Regular expression for emissions string to
 #'   replace. Default is `"emissions/RCP45_emissions\\.csv"`.
+#' @param replace_exo Regular expression for exogenous emissions. This
+#'   will be deleted because, by default, we pass two values, not a
+#'   CSV file. Default = `"exo_emissions.*=0"`
 #' @param emissions_outfile Target output emissions CSV file. Default
 #'   = `tempfile(fileext = ".csv")`.
 #' @param ini_outfile Target output INI file. Default =
@@ -30,6 +33,7 @@ emissions2ini <- function(emissions,
                             package = "hector"
                           ),
                           replace_string = "emissions/RCP45_emissions\\.csv",
+                          replace_exo = "exo_emissions.*=0",
                           emissions_outfile = tempfile(fileext = ".csv"),
                           ini_outfile = tempfile(fileext = ".ini")) {
 
@@ -45,6 +49,12 @@ emissions2ini <- function(emissions,
     )
   }
   ini_new <- gsub(replace_string, emissions_outfile, ini_base)
+
+  # Replace exogenous emissions
+  nexo <- grep(replace_exo, ini_new)
+  stopifnot(length(nexo) >= 1)
+  ini_new[head(nexo, 1)] <- paste0("exo_emissions=csv:", emissions_outfile)
+  ini_new[tail(nexo, -1)] <- ""
 
   # Use full path, not relative path, for volcanic emissions
   ini_new <- gsub(

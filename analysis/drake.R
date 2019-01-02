@@ -4,6 +4,7 @@ library(ggplot2)
 pkgconfig::set_config("drake::strings_in_dots" = "literals")
 
 devtools::load_all(".")
+expose_imports("hector.permafrost.emit")
 
 rcps <- paste0("RCP", c("26", "45", "6", "85"))
 
@@ -14,7 +15,7 @@ baseline_template <- drake_plan(
   no_permafrost = readr::read_csv(
     system.file("input/emissions/ZZZ_emissions.csv", package = "hector"),
     skip = 3
-  )
+  ) %>% dplyr::mutate(exo_emissions = 0)
 )
 
 baseline_plan <- evaluate_plan(
@@ -121,7 +122,7 @@ plot_plan <- drake_plan(
     dplyr::filter(
       year > 2000, year <= 2100,
       !grepl("schaefer", permafrost),
-      !(datatype == "emissions" & !grepl("ffi|CH4", variable)),
+      !(datatype == "emissions" & !grepl("ffi|CH4|exo", variable)),
       ) %>%
     dplyr::mutate(
       variable = forcats::fct_inorder(variable)
