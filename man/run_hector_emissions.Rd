@@ -2,31 +2,32 @@
 % Please edit documentation in R/run_hector_emissions.R
 \name{run_hector_emissions}
 \alias{run_hector_emissions}
-\title{Run Hector for scenario, given as `data.frame`}
+\title{Run Hector with custom emissions}
 \usage{
-run_hector_emissions(emissions, ...)
+run_hector_emissions(rcp, exo_emissions_df = NULL,
+  suppresslogging = TRUE, ...)
 }
 \arguments{
-\item{emissions}{`data.frame` containing Hector emissions data}
+\item{rcp}{Character describing RCP to use as baseline. Must be one
+of `"26", "45", "60", "85"`.}
 
-\item{...}{Arguments passed on to \code{emissions2ini}
+\item{exo_emissions_df}{`data.frame` containing exogenous emissions
+data. Must contain column `Date` (year of emissions), and one (or
+both) of `exo_emissions` (exogenous CO2 emissions) or
+`exo_ch4_emissions` (for CH4).}
+
+\item{suppresslogging}{(bool) If true, suppress all logging (loglevel is ignored in this case).}
+
+\item{...}{Arguments passed on to \code{hector::newcore}
 \describe{
-  \item{emissions}{`data.frame` containing Hector emissions data}
-  \item{base_ini}{Path to base INI file. Default is Hector RCP 4.5
-INI file.}
-  \item{replace_string}{Regular expression for emissions string to
-replace. Default is `"emissions/RCP45_emissions\\.csv"`.}
-  \item{replace_exo}{Regular expression for exogenous emissions. This
-will be deleted because, by default, we pass two values, not a
-CSV file. Default = `"exo_emissions.*=0"`}
-  \item{emissions_outfile}{Target output emissions CSV file. Default
-= `tempfile(fileext = ".csv")`.}
-  \item{ini_outfile}{Target output INI file. Default =
-`tempfile(fileext = ".ini")`.}
+  \item{inifile}{(String) name of the hector input file.}
+  \item{loglevel}{(int) minimum message level to output in logs (see \code{\link{loglevels}}).}
+  \item{suppresslogging}{(bool) If true, suppress all logging (loglevel is ignored in this case).}
+  \item{name}{(string) An optional name to identify the core.}
 }}
 }
 \description{
-Run Hector for scenario, given as `data.frame`
+Run Hector with custom emissions
 }
 \author{
 Alexey Shiklomanov

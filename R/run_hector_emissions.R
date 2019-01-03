@@ -1,68 +1,59 @@
-#' Run Hector for scenario, given as `data.frame`
+#' Run Hector with custom emissions
 #'
-#' @inheritParams emissions2ini
-#' @inheritDotParams emissions2ini
-#' @return
+#' @param rcp Character describing RCP to use as baseline. Must be one
+#'   of `"26", "45", "60", "85"`.
+#' @param exo_emissions_df `data.frame` containing exogenous emissions
+#'   data. Must contain column `Date` (year of emissions), and one (or
+#'   both) of `exo_emissions` (exogenous CO2 emissions) or
+#'   `exo_ch4_emissions` (for CH4).
+#' @inheritParams hector::newcore
+#' @inheritDotParams hector::newcore
 #' @author Alexey Shiklomanov
 #' @export
-run_hector_emissions <- function(emissions, ...) {
-  ini <- emissions2ini(emissions, ...)
-  result <- hector::runscenario(ini)
-  result
-}
-
-#' Create Hector INI file from emissions `data.frame`
-#'
-#' @param emissions `data.frame` containing Hector emissions data
-#' @param base_ini Path to base INI file. Default is Hector RCP 4.5
-#'   INI file.
-#' @param replace_string Regular expression for emissions string to
-#'   replace. Default is `"emissions/RCP45_emissions\\.csv"`.
-#' @param replace_exo Regular expression for exogenous emissions. This
-#'   will be deleted because, by default, we pass two values, not a
-#'   CSV file. Default = `"exo_emissions.*=0"`
-#' @param emissions_outfile Target output emissions CSV file. Default
-#'   = `tempfile(fileext = ".csv")`.
-#' @param ini_outfile Target output INI file. Default =
-#'   `tempfile(fileext = ".ini")`.
-#' @return Path to INI file
-#' @author Alexey Shiklomanov
-emissions2ini <- function(emissions,
-                          base_ini = system.file(
-                            "input/hector_rcp45.ini",
-                            package = "hector"
-                          ),
-                          replace_string = "emissions/RCP45_emissions\\.csv",
-                          replace_exo = "exo_emissions.*=0",
-                          emissions_outfile = tempfile(fileext = ".csv"),
-                          ini_outfile = tempfile(fileext = ".ini")) {
-
-  stopifnot(file.exists(base_ini))
-  ini_base <- readLines(base_ini)
-
-  readr::write_csv(emissions, emissions_outfile)
-
-  if (!any(grepl(replace_string, ini_base))) {
-    stop(
-      "Target replacement string '", replace_string, "' ",
-      "not found in INI file '", base_ini, "'."
-    )
-  }
-  ini_new <- gsub(replace_string, emissions_outfile, ini_base)
-
-  # Replace exogenous emissions
-  nexo <- grep(replace_exo, ini_new)
-  stopifnot(length(nexo) >= 1)
-  ini_new[head(nexo, 1)] <- paste0("exo_emissions=csv:", emissions_outfile)
-  ini_new[tail(nexo, -1)] <- ""
-
-  # Use full path, not relative path, for volcanic emissions
-  ini_new <- gsub(
-    "emissions/volcanic_RF\\.csv",
-    system.file("input/emissions/volcanic_RF.csv", package = "hector"),
-    ini_new
+#' @return
+run_hector_emissions <- function(rcp, exo_emissions_df = NULL,
+                                 suppresslogging = TRUE,
+                                 ...) {
+  stopifnot(rcp %in% c("26", "45", "60", "85"))
+  inifile <- system.file(
+    "input",
+    paste0("hector_rcp", rcp, ".ini"),
+    package = "hector"
   )
-  writeLines(ini_new, ini_outfile)
+  stopifnot(file.exists(inifile))
+  hc <- hector::newcore(inifile, suppresslogging = suppresslogging, ...)
+  on.exit(hector::shutdown(hc))
 
-  ini_outfile
+  if (!is.null(exo_emissions_df)) {
+    stopifnot(
+      is.data.frame(exo_emissions_df),
+      "Date" %in% colnames(exo_emissions_df)
+    )
+    exo_years <- exo_emissions_df[["Date"]]
+    if ("exo_emissions" %in% colnames(exo_emissions_df)) {
+      hector::setvar(
+        hc,
+        exo_years,
+        "exo_emissions",
+        exo_emissions_df[["exo_emissions"]],
+        "Pg C/yr"
+      )
+    }
+    if ("exo_ch4_emissions" %in% colnames(exo_emissions_df)) {
+      hector::setvar(
+        hc,
+        exo_years,
+        "exo_ch4_emissions",
+        exo_emissions_df[["exo_ch4_emissions"]],
+        "Tg CH4"
+      )
+    }
+  }
+
+  hector::run(hc)
+  result <- hector::fetchvars(
+    hc,
+    seq(hector::startdate(hc), hector::enddate(hc))
+  )
+  result
 }

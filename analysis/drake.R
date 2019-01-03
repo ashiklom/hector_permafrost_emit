@@ -11,66 +11,54 @@ rcps <- paste0("RCP", c("26", "45", "6", "85"))
 mtco2_gtc <- (12 / 48) * (1 / 1000)
 mtch4_gtc <- (12 / 16) * (1 / 1000)
 
-baseline_template <- drake_plan(
-  no_permafrost = readr::read_csv(
-    system.file("input/emissions/ZZZ_emissions.csv", package = "hector"),
-    skip = 3
-  ) %>% dplyr::mutate(exo_emissions = 0)
-)
-
-baseline_plan <- evaluate_plan(
-  baseline_template,
-  wildcard = "ZZZ",
-  values = rcps
-)
-
 schaefer_template <- drake_plan(
   schaefer_file = file_in("analysis/data/raw_data/schaefer_teb_rpc_ZZZ.csv"),
   schaefer = read_and_interpolate(schaefer_file_ZZZ, 2050, 2100) %>%
     # Convert cumulative emissions to annual
-    dplyr::mutate(value = c(0, diff(value))) %>%
-    create_scenario(
-      cc = .,
-      ch4_frac = 0,
-      base_scenario_data = no_permafrost_YYY
+    dplyr::mutate(
+      value = c(0, diff(value)),
+      exo_ch4_emissions = 0
+    ) %>%
+    dplyr::select(
+      Date = year,
+      exo_emissions = value,
+      exo_ch4_emissions
     )
 )
 
 schaefer_plan <- evaluate_plan(
   schaefer_template,
-  rules = list(
-    ZZZ = c("min", "mean", "max"),
-    YYY = rcps
-  )
+  rules = list(ZZZ = c("min", "mean", "max"))
 )
 
 hope_template <- drake_plan(
   hope_ch4_file = file_in("analysis/data/raw_data/hope_2016_MtCH4_ZZZ.csv"),
   hope_co2_file = file_in("analysis/data/raw_data/hope_2016_MtCO2_ZZZ.csv"),
-  hope = create_scenario(
-    co2 = read_and_interpolate(
+  hope = dplyr::full_join(
+    read_and_interpolate(
       hope_co2_file_ZZZ,
       2012, 2100,
       scale = mtco2_gtc
     ),
-    ch4 = read_and_interpolate(
+    read_and_interpolate(
       hope_ch4_file_ZZZ,
       2012, 2100,
       scale = 1
     ),
-    base_scenario_data = no_permafrost_YYY
+    by = "year"
+  ) %>% dplyr::select(
+    Date = year,
+    exo_emissions = value.x,
+    exo_ch4_emissions = value.y
   )
 )
 
 hope_plan <- evaluate_plan(
   hope_template,
-  rules = list(
-    ZZZ = c("lo", "mean", "hi"),
-    YYY = rcps
-  )
+  rules = list(ZZZ = c("lo", "mean", "hi"))
 )
 
-scenarios_plan <- bind_plans(baseline_plan, schaefer_plan, hope_plan)
+scenarios_plan <- bind_plans(schaefer_plan, hope_plan)
 combined_plan <- scenarios_plan %>%
   dplyr::filter(!grepl("_file_", target)) %>%
   gather_plan(target = "scenario_list") %>%
@@ -80,22 +68,38 @@ combined_plan <- scenarios_plan %>%
   )
 
 run_template <- drake_plan(
-  results = run_hector_emissions(emissions__)
+  results = run_hector_emissions(
+    rcp__,
+    emissions__,
+    name = paste0("emissions__", ".", "RCPrcp__")
+  )
 )
 
 run_plan <- evaluate_plan(
   run_template,
-  wildcard = "emissions__",
-  values = scenarios_plan %>%
-    dplyr::filter(!grepl("_file_", target)) %>%
-    dplyr::pull(target)
+  list(
+    emissions__ = c(
+      "NULL", # Baseline -- no exogenous emissions
+      grep("file", scenarios_plan[["target"]], value = TRUE, invert = TRUE)
+    ),
+    rcp__ = c("26", "45", "60", "85")
+  )
 )
 
-results_plan <- gather_plan(run_plan, target = "results_list") %>%
-  dplyr::add_row(
-    target = "all_results",
-    command = "dplyr::bind_rows(results_list, .id = 'id')"
+results_plan <- bind_plans(
+  gather_plan(run_plan, target = "results_list"),
+  drake_plan(
+    all_results = results_list %>%
+      dplyr::bind_rows(.id = "id") %>%
+      tibble::as_tibble() %>%
+      tidyr::separate(scenario, c("permafrost", "RCP"), sep = "\\.") %>%
+      dplyr::mutate(
+        permafrost = forcats::fct_inorder(permafrost) %>%
+          forcats::fct_recode("baseline" = "NULL"),
+        RCP = forcats::fct_inorder(RCP)
+      )
   )
+)
 
 plot_plan <- drake_plan(
   tidy_scenarios = all_scenarios %>%
@@ -139,7 +143,7 @@ plot_plan <- drake_plan(
   )
 )
 
-plan <- bind_plans(scenarios_plan, combined_plan, run_plan,
-                   results_plan, plot_plan)
+plan <- bind_plans(scenarios_plan, combined_plan, run_plan, results_plan)
+                   ## plot_plan)
 config <- drake_config(plan)
 make(plan)
