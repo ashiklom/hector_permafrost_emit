@@ -13,6 +13,12 @@ mtch4_gtc <- (12 / 16) * (1 / 1000)
 
 #########################################
 
+make(bind_plans(scenarios_plan, combined_plan))
+
+readd(scenario_names)
+
+loadd(hope_lo)
+
 loadd(all_results)
 loadd(all_scenarios)
 

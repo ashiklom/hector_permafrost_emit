@@ -2,11 +2,15 @@ library(drake)
 library(magrittr)
 library(ggplot2)
 pkgconfig::set_config("drake::strings_in_dots" = "literals")
-
 devtools::load_all(".")
 expose_imports("hector.permafrost.emit")
 
 rcps <- paste0("RCP", c("26", "45", "6", "85"))
+
+gcam_root <- getOption("gcam_root")
+stopifnot(!is.null(gcam_root), file.exists(gcam_root))
+gcam_climate <- file.path(gcam_root, "input", "climate")
+gcam_exe <- file.path(gcam_root, "exe")
 
 mtco2_gtc <- (12 / 48) * (1 / 1000)
 mtch4_gtc <- (12 / 16) * (1 / 1000)
@@ -62,10 +66,10 @@ scenarios_plan <- bind_plans(schaefer_plan, hope_plan)
 combined_plan <- scenarios_plan %>%
   dplyr::filter(!grepl("_file_", target)) %>%
   gather_plan(target = "scenario_list") %>%
-  dplyr::add_row(
-    target = "all_scenarios",
-    command = "dplyr::bind_rows(scenario_list, .id = 'scenario')"
-  )
+  bind_plans(drake_plan(
+    scenario_names = names(scenario_list),
+    all_scenarios = dplyr::bind_rows(scenario_list, .id = 'scenario')
+  ))
 
 run_template <- drake_plan(
   results = run_hector_emissions(
@@ -78,10 +82,7 @@ run_template <- drake_plan(
 run_plan <- evaluate_plan(
   run_template,
   list(
-    emissions__ = c(
-      "NULL", # Baseline -- no exogenous emissions
-      grep("file", scenarios_plan[["target"]], value = TRUE, invert = TRUE)
-    ),
+    emissions__ = c("NULL", readd(scenario_names)),
     rcp__ = c("26", "45", "60", "85")
   )
 )
@@ -100,6 +101,27 @@ results_plan <- bind_plans(
       )
   )
 )
+
+gcam_plan <- drake_plan(
+  csv = readr::write_csv(ZZZ, file_out("CLIM/ZZZ.csv")),
+  ini = make_ini(
+    file_in("CLIM/ZZZ.csv"),
+    file_in("CLIM/hector-gcam.ini"),
+    file_out("CLIM/ZZZ.ini")
+  ),
+  xml = make_xmls(
+    ini_ZZZ,
+    file_in("GCAM/input/gcamdata/xml/hector.xml"),
+    file_in("EXE/configuration_ref.xml"),
+    file_out("GCAM/input/gcamdata/xml/hector_ZZZ.xml"),
+    file_out("EXE/config_ZZZ.xml")
+  )
+) %>%
+  evaluate_plan(rules = list(ZZZ = readd(scenario_names))) %>%
+  evaluate_plan(
+    rules = list(GCAM = gcam_root, EXE = gcam_exe, CLIM = gcam_climate),
+    rename = FALSE
+  )
 
 plot_plan <- drake_plan(
   tidy_scenarios = all_scenarios %>%
@@ -143,7 +165,7 @@ plot_plan <- drake_plan(
   )
 )
 
-plan <- bind_plans(scenarios_plan, combined_plan, run_plan, results_plan)
+plan <- bind_plans(scenarios_plan, combined_plan, run_plan, results_plan, gcam_plan)
                    ## plot_plan)
 config <- drake_config(plan)
 make(plan)

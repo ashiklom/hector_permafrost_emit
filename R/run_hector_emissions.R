@@ -8,9 +8,9 @@
 #'   `exo_ch4_emissions` (for CH4).
 #' @inheritParams hector::newcore
 #' @inheritDotParams hector::newcore
+#' @return Hector output, as `data.frame` (see [hector::fetchvars()]). 
 #' @author Alexey Shiklomanov
 #' @export
-#' @return
 run_hector_emissions <- function(rcp, exo_emissions_df = NULL,
                                  suppresslogging = TRUE,
                                  ...) {

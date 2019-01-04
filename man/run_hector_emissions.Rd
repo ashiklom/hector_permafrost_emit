@@ -26,6 +26,9 @@ both) of `exo_emissions` (exogenous CO2 emissions) or
   \item{name}{(string) An optional name to identify the core.}
 }}
 }
+\value{
+Hector output, as `data.frame` (see [hector::fetchvars()]).
+}
 \description{
 Run Hector with custom emissions
 }
