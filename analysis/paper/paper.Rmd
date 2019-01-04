@@ -39,15 +39,18 @@ Important to reduce carbon emissions to meet temperature targets.
 The extent of anthropogenic emissions reduction depends on what how much help (or push-back) we get from the physical and biological Earth systems.
 
 Permafrost is an important C reservoir.
-There are an estimated 500 Gt C in organic matter buried by frozen loess in the north plains of Siberia and Central Alaska [@zimov_2006_climate_change], and an additional 400 Gt C in other permafrost (CITE; see ref in Zimov), and XXX more in peat (CITE).
-This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes (REF).
-These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (???) times faster than the global average (REF).
+Total northern soil C pool is estimated at 1672 PgC, of which approximately 1466 Pg (88%) is in permafrost [@tarnocai_2009_soil].
+This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes and wetlands [@turetsky_2002_boreal; @wickland_2006_effects].
+But emissions from wet soils may be offset by high organic matter accumulation rates [@camill_2001_changes].
+Permafrost thaw in boreal peatlands in north-central Saskatchewan increased CO2 and CH4 fluxes from soil to atmosphere by 1.6 and 30 times, respectively [@turetsky_2002_boreal].
+These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (TODO ???) times faster than the global average (REF).
 Projections of permafrost C emissions vary.
 [@schuur_2009_effect] estimate 0.8 - 1.1 Pg C yr-1.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]: 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
 
 Several studies have attempted to evaluate the potential economic impacts of current and future permafrost C emissions.
-@hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
+@lawrence_2012_simulation project declines in near-surface permafrost by 33% and 72% in RCP 2.6 and 8.5, respectively, and permafrost C feedback will stabilize at 2100 in RCP 2.6.
+More recently, @hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
 They found that XXX.
 Similarly, @gonzalez-eguino_2016_significant used the DICE (TODO: write in full) model to XXX.
 
@@ -97,9 +100,17 @@ my_data <- readr::read_csv("../data/raw_data/my_csv_file.csv")
 
 # Discussion
 
+Rate of permafrost C release also depends on soil moisture conditions -- drier soils release C much faster ("carbon bomb") than wetter soils ("carbon fizz") [@elberling_2013_long].
+Moisture will also affect the balance of aerobic (CO2 release) vs. anaerobic (CH4) C release [@turetsky_2002_boreal], to the extent that unclear if anaerobic (wet) areas are C sources or sinks [@wickland_2006_effects].
+Effects of permafrost thaw on soil moisture are a complex hydrological problem -- drainage very sensitive to local (micro-)topography [@wickland_2006_effects].
+So will vegetation cover [@wickland_2006_effects].
+
 # Conclusion
 
-# Acknowledgements
+# Acknowledgments
+
+Funded by EPA grant XXX.
+Cyberinfrastructure support from Pacific Northwest National Laboratory (PNNL).
 
 <!-- The following line inserts a page break when the output is MS Word. For page breaks in PDF, use \newpage on its own line.  -->
 ##### pagebreak
