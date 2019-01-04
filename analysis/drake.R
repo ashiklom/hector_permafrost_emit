@@ -114,7 +114,8 @@ gcam_plan <- drake_plan(
     file_in("GCAM/input/gcamdata/xml/hector.xml"),
     file_in("EXE/configuration_ref.xml"),
     file_out("GCAM/input/gcamdata/xml/hector_ZZZ.xml"),
-    file_out("EXE/config_ZZZ.xml")
+    file_out("EXE/config_ZZZ.xml"),
+    gcam_scenario_name = "ZZZ"
   )
 ) %>%
   evaluate_plan(rules = list(ZZZ = readd(scenario_names))) %>%

@@ -5,7 +5,7 @@
 \title{Process GCAM input XML files}
 \usage{
 make_xmls(hector_ini, hector_xml_in, gcam_xml_in, hector_xml_out,
-  gcam_xml_out)
+  gcam_xml_out, gcam_scenario_name = "hector_permafrost")
 }
 \arguments{
 \item{hector_ini}{Path to Hector INI file to use with scenario}
@@ -17,6 +17,9 @@ make_xmls(hector_ini, hector_xml_in, gcam_xml_in, hector_xml_out,
 \item{hector_xml_out}{Path to target Hector XML file}
 
 \item{gcam_xml_out}{Path to target GCAM XML file}
+
+\item{gcam_scenario_name}{Desired GCAM scenario name, as character.
+Default = `"hector_permafrost"`.}
 }
 \value{
 Named `character(2)` containing paths to Hector and GCAM
