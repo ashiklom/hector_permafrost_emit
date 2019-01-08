@@ -67,7 +67,6 @@ combined_plan <- scenarios_plan %>%
   dplyr::filter(!grepl("_file_", target)) %>%
   gather_plan(target = "scenario_list") %>%
   bind_plans(drake_plan(
-    scenario_names = names(scenario_list),
     all_scenarios = dplyr::bind_rows(scenario_list, .id = 'scenario')
   ))
 
@@ -79,10 +78,15 @@ run_template <- drake_plan(
   )
 )
 
+scenario_names <- c(
+  paste0("hope_", c("lo", "mean", "hi")),
+  paste0("schaefer_", c("min", "mean", "max"))
+)
+
 run_plan <- evaluate_plan(
   run_template,
   list(
-    emissions__ = c("NULL", readd(scenario_names)),
+    emissions__ = c("NULL", scenario_names),
     rcp__ = c("26", "45", "60", "85")
   )
 )
@@ -118,7 +122,7 @@ gcam_plan <- drake_plan(
     gcam_scenario_name = "ZZZ"
   )
 ) %>%
-  evaluate_plan(rules = list(ZZZ = readd(scenario_names))) %>%
+  evaluate_plan(rules = list(ZZZ = scenario_names)) %>%
   evaluate_plan(
     rules = list(GCAM = gcam_root, EXE = gcam_exe, CLIM = gcam_climate),
     rename = FALSE
