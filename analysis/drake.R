@@ -62,7 +62,14 @@ hope_plan <- evaluate_plan(
   rules = list(ZZZ = c("lo", "mean", "hi"))
 )
 
-scenarios_plan <- bind_plans(schaefer_plan, hope_plan)
+scenarios_plan <- bind_plans(schaefer_plan, hope_plan) %>%
+  bind_plans(drake_plan(
+    no_permafrost = tibble::tibble(
+      Date = 2012:2100,
+      exo_emissions = 0,
+      exo_ch4_emissions = 0
+    )
+  ))
 combined_plan <- scenarios_plan %>%
   dplyr::filter(!grepl("_file_", target)) %>%
   gather_plan(target = "scenario_list") %>%
@@ -79,6 +86,7 @@ run_template <- drake_plan(
 )
 
 scenario_names <- c(
+  "no_permafrost",
   paste0("hope_", c("lo", "mean", "hi")),
   paste0("schaefer_", c("min", "mean", "max"))
 )
