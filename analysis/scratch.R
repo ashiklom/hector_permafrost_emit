@@ -32,3 +32,18 @@ all_results %>%
   geom_line() +
   facet_wrap(~variable, scales = "free_y") +
   scale_linetype(drop = TRUE)
+
+#########################################
+no_permafrost <- tibble::tibble(
+  Date = 2000:2100,
+  exo_emissions = 0,
+  exo_ch4_emissions = 0
+)
+
+run_hector_emissions("45", no_permafrost)
+
+loadd(all_results)
+loadd(gcam_results)
+## loadd(tidy_scenarios)
+readd(combined_results) %>%
+  dplyr::count(variable)

@@ -94,7 +94,7 @@ scenario_names <- c(
 run_plan <- evaluate_plan(
   run_template,
   list(
-    emissions__ = c("NULL", scenario_names),
+    emissions__ = scenario_names,
     rcp__ = c("26", "45", "60", "85")
   )
 )
@@ -107,8 +107,7 @@ results_plan <- bind_plans(
       tibble::as_tibble() %>%
       tidyr::separate(scenario, c("permafrost", "RCP"), sep = "\\.") %>%
       dplyr::mutate(
-        permafrost = forcats::fct_inorder(permafrost) %>%
-          forcats::fct_recode("baseline" = "NULL"),
+        permafrost = forcats::fct_inorder(permafrost),
         RCP = forcats::fct_inorder(RCP)
       )
   )
@@ -137,48 +136,78 @@ gcam_plan <- drake_plan(
   )
 
 plot_plan <- drake_plan(
-  tidy_scenarios = all_scenarios %>%
-    tidyr::gather(variable, value, -Date, -scenario) %>%
-    dplyr::rename(year = Date) %>%
-    dplyr::mutate(datatype = "emissions"),
-  tidy_results = all_results %>%
-    tibble::as_tibble() %>%
-    dplyr::select(-scenario) %>%
-    dplyr::rename(scenario = id) %>%
+  gcam_project = rgcam::loadProject(file_in("gcam-output/permafrost.dat")),
+  gcam_results = c(Ca = "CO2 concentrations",
+                   Ftot = "Climate forcing",
+                   Tgav = "Global mean temperature") %>%
+    purrr::imap_dfr(function(x, n) purrr::map_dfr(gcam_project, x) %>%
+                                     dplyr::mutate(variable = n, RCP = "GCAM")) %>%
+    dplyr::rename(permafrost = scenario, units = Units),
+  combined_results = suppressWarnings(dplyr::bind_rows(all_results, gcam_results)),
+  climate_plot = combined_results %>%
+    dplyr::filter(year > 2000, year <= 2100,
+                  !grepl("schaefer", permafrost),
+                  variable == c("Tgav")) %>%
     dplyr::mutate(
-      scenario = gsub("results_", "", scenario),
-      datatype = "results"
-    ),
-  tidy_all = dplyr::bind_rows(tidy_scenarios, tidy_results) %>%
-    dplyr::mutate(
-      RCP = gsub(".*(RCP.*)", "\\1", scenario) %>%
-        forcats::fct_inorder(),
-      permafrost = gsub("_RCP.*", "", scenario) %>%
-        gsub("results_", "", .) %>%
-        forcats::fct_inorder()
-    ),
-  all_figure = tidy_all %>%
-    dplyr::filter(
-      year > 2000, year <= 2100,
-      !grepl("schaefer", permafrost),
-      !(datatype == "emissions" & !grepl("ffi|CH4|exo", variable)),
-      ) %>%
-    dplyr::mutate(
-      variable = forcats::fct_inorder(variable)
+      variable = factor(variable, c("Tgav", "Ca", "Ftot")) %>%
+        forcats::fct_recode("Global temperature" = "Tgav",
+                            "Atmospheric CO2" = "Ca",
+                            "Total forcing" = "Ftot"),
+      permafrost = forcats::fct_inorder(permafrost) %>%
+        forcats::fct_rev(),
+      RCP = forcats::fct_reorder(RCP, value, .fun = max, .desc = TRUE)
     ) %>%
     ggplot() +
-    aes(x = year, y = value, color = RCP, linetype = permafrost) +
+    aes(x = year, y = value, linetype = permafrost, color = RCP) +
     geom_line() +
-    facet_wrap(variable ~ ., scales = "free_y") +
-    scale_color_viridis_d(),
-  all_figure_png = ggsave(
-    file_out("analysis/figures/all_results.png"),
-    all_figure,
-    width = 8, height = 6, units = "in"
-  )
+    scale_linetype_manual(
+      values = rev(c("solid", "longdash", "dashed", "dotted"))
+    ) +
+    ylab(expression("Global mean" ~ Delta * T)) +
+    theme(legend.position = c(0.02, 0.98),
+          legend.justification = c(0, 1)),
+  climate_plot_png = ggsave(file_out("analysis/figures/climate_results.png"),
+                            climate_plot,
+                            width = 7, height = 7, units = "in")
 )
 
-plan <- bind_plans(scenarios_plan, combined_plan, run_plan, results_plan, gcam_plan)
-                   ## plot_plan)
+## plot_plan <- drake_plan(
+##   tidy_scenarios = all_scenarios %>%
+##     tidyr::gather(variable, value, -Date, -scenario) %>%
+##     dplyr::rename(year = Date, scenario = permafrost) %>%
+##     dplyr::mutate(datatype = "emissions"),
+##   tidy_results = all_results %>%
+##     dplyr::mutate(datatype = "results"),
+##   tidy_all = dplyr::bind_rows(tidy_scenarios, tidy_results) %>%
+##     dplyr::mutate(
+##       RCP = gsub(".*(RCP.*)", "\\1", scenario) %>%
+##         forcats::fct_inorder(),
+##       permafrost = gsub("_RCP.*", "", scenario) %>%
+##         gsub("results_", "", .) %>%
+##         forcats::fct_inorder()
+##     ),
+##   all_figure = tidy_all %>%
+##     dplyr::filter(
+##       year > 2000, year <= 2100,
+##       !grepl("schaefer", permafrost),
+##       !(datatype == "emissions" & !grepl("ffi|CH4|exo", variable)),
+##       ) %>%
+##     dplyr::mutate(
+##       variable = forcats::fct_inorder(variable)
+##     ) %>%
+##     ggplot() +
+##     aes(x = year, y = value, color = RCP, linetype = permafrost) +
+##     geom_line() +
+##     facet_wrap(variable ~ ., scales = "free_y") +
+##     scale_color_viridis_d(),
+##   all_figure_png = ggsave(
+##     file_out("analysis/figures/all_results.png"),
+##     all_figure,
+##     width = 8, height = 6, units = "in"
+##   )
+## )
+
+plan <- bind_plans(scenarios_plan, combined_plan, run_plan, results_plan,# gcam_plan,
+                   plot_plan)
 config <- drake_config(plan)
 make(plan)
