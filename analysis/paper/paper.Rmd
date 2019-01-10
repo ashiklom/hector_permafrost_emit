@@ -48,6 +48,9 @@ Projections of permafrost C emissions vary.
 [@schuur_2009_effect] estimate 0.8 - 1.1 Pg C yr-1.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]: 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
 
+(Previous work on modeling permafrost)
+[@burke_2017_quantifying] -- JULES and ORCHIDEE, with new permafrost scheme, combined with intermediate complexity climate-ocean model (IMOGEN), to look at climate sensitivity to permafrost C emissions.
+
 Several studies have attempted to evaluate the potential economic impacts of current and future permafrost C emissions.
 @lawrence_2012_simulation project declines in near-surface permafrost by 33% and 72% in RCP 2.6 and 8.5, respectively, and permafrost C feedback will stabilize at 2100 in RCP 2.6.
 More recently, @hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
@@ -104,6 +107,10 @@ Rate of permafrost C release also depends on soil moisture conditions -- drier s
 Moisture will also affect the balance of aerobic (CO2 release) vs. anaerobic (CH4) C release [@turetsky_2002_boreal], to the extent that unclear if anaerobic (wet) areas are C sources or sinks [@wickland_2006_effects].
 Effects of permafrost thaw on soil moisture are a complex hydrological problem -- drainage very sensitive to local (micro-)topography [@wickland_2006_effects].
 So will vegetation cover [@wickland_2006_effects].
+
+Temperature amplification of permafrost carbon feedback (by 2100) 0.02 to 0.36 °C [@burke_2013_estimating; @schneider_2012_estimating; @schneider_2015_observation], or 0.1 to 0.8 °C in [@macdougall_2012_significant; @macdougall_2013_if], or 10-40% of peak temperature change [@crichton_2016_permafrost], or 0.2 to 12% [@burke_2017_quantifying].
+
+Permafrost carbon has greater impact at lower emissions scenarios [@burke_2017_quantifying; @macdougall_2012_significant; @macdougall_2013_if] .
 
 # Conclusion
 
