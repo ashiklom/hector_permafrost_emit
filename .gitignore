@@ -5,3 +5,6 @@ analysis/figures/
 
 # Hector log files
 logs/
+
+# GCAM output (huge!)
+gcam-output/
