@@ -3,6 +3,8 @@ title: "Hector Permafrost"
 author:
   - Alexey N. Shiklomanov
   - Ben Bond-Lamberty
+  - Ben Kravitz?
+  - Kate Calvin?
   - Corinne Hartin
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
@@ -43,13 +45,18 @@ Total northern soil C pool is estimated at 1672 PgC, of which approximately 1466
 This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes and wetlands [@turetsky_2002_boreal; @wickland_2006_effects].
 But emissions from wet soils may be offset by high organic matter accumulation rates [@camill_2001_changes].
 Permafrost thaw in boreal peatlands in north-central Saskatchewan increased CO2 and CH4 fluxes from soil to atmosphere by 1.6 and 30 times, respectively [@turetsky_2002_boreal].
-These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (TODO ???) times faster than the global average (REF).
+These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (TODO ???) times faster than the global average (TODO REF).
 Projections of permafrost C emissions vary.
 [@schuur_2009_effect] estimate 0.8 - 1.1 Pg C yr-1.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]: 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
 
+On the other hand, warming and CO2 fertilization may increase vegetation productivity, which could increase soil C storage through enhanced litterfall; the balance of these two processes is uncertain [@jones_2005_global].
+Several modeling studies generally predict increases in soil C in high latitudes [@burke_2017_quantifying; @qian_2010_enhanced; @ito_2016_impacts].
+However, this increase is dampened by including permafrost C [@burke_2017_quantifying].
+
 (Previous work on modeling permafrost)
 [@burke_2017_quantifying] -- JULES and ORCHIDEE, with new permafrost scheme, combined with intermediate complexity climate-ocean model (IMOGEN), to look at climate sensitivity to permafrost C emissions.
+Models are highly sensitive to representation of soil processes, which can be more important than differences in scenario and/or climate drivers [@burke_2017_quantifying].
 
 Several studies have attempted to evaluate the potential economic impacts of current and future permafrost C emissions.
 @lawrence_2012_simulation project declines in near-surface permafrost by 33% and 72% in RCP 2.6 and 8.5, respectively, and permafrost C feedback will stabilize at 2100 in RCP 2.6.
@@ -57,11 +64,18 @@ More recently, @hope_2015_economic projected permafrost C emissions using the Si
 They found that XXX.
 Similarly, @gonzalez-eguino_2016_significant used the DICE (TODO: write in full) model to XXX.
 
+@hope_2015_economic (and others?) rely on climate damage functions of the general form $\delta GDP = f(\delta T)$.
+Such functions are, at best, highly uncertain (TODO REF), and possibly conceptually flawed (TODO REF).
+(TODO More on this).
+GCAM (TODO full name) is an alternative (TODO REF).
+(TODO More on GCAM).
+
 (Paragraph on simple climate models.)
 Hector [@hartin_2015_simple].
 However, Hector does not have an explicit representation of permafrost C emissions.
 In this study, we investigate whether the additional complexity and parametric and structural uncertainty of an explicit representation of permafrost may be warranted in Hector.
 To do this, we evaluate the sensitivity of climate variables (as predicted by Hector) to several different exogenous scenarios of permafrost C emissions.
+(TODO Modify this to be about economic impact)
 
 Some more relevant references:
 - [@zimov_2006_climate_change]
@@ -93,6 +107,17 @@ CO2 and CH4 emissions from SiBCASA model.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
 - 500 Gt C in loess that could be completely emitted by 2100 (plus other C sources).
 - 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years. Combine with data on permafrost spatial extent, density, etc. to generate estimates (but can back-calculate from 500 Gt C above?)
+
+
+## Modeling permafrost emissions
+
+Frozen carbon residence time (FCRt) from [@burke_2017_quantifying]:
+
+$$ FCRt = FCRt0 * exp(-ΔT / Γ) (for ΔT > 0.2 °C) $$
+
+- $FCRt_0$ (years) reflects the stability of permafrost C (length of time that permafrost C is stable when $\Delta T = 0$)
+- $\Gamma$ -- decay term (°C); temperature change at which "the number of years taken for all of the old permafrost C to be emitted reduces to 1/e of its initial value"
+
 
 # Results
 
