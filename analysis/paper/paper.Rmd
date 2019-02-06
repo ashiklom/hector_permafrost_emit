@@ -128,6 +128,44 @@ $$ R_{p, CH_4} = \alpha R_{p, tot} $$
 $$ R_{p, CO_2} = (1 - \alpha) ^ \phi R_{p, tot} $$
 
 
+## Parameter calibration
+
+We used the `BayesianTools` R package [@R-BayesianTools] for all parameter calibration.
+The outputs of these calibrations are joint posterior distributions of parameters and their covariances, from which we sample for the sensitivity analysis.
+
+For global parameters, we used the following likelihood:
+
+$$ \log(L) = \sum_s Normal(Hector(\Beta, Q_{10}, s) | CMIP5(s), \sigma) $$
+
+where $s$ is one of the four representative carbon pathways (RCPs), $CMIP5(s)$ are the CMIP5 global mean outputs for the corresponding variables, and $\sigma$ is the model error (estimated during the fit).
+We also used the resulting distributions for $\Beta$ and $Q_{10}$ for the non-permafrost biome in cases 2 and 3.
+We feel this is appropriate because the CMIP5 models against which these parameters are calibrated do not include permafrost C feedbacks.
+
+For case 2, we calibrated the permafrost-specific $\Beta$ and $Q_{10}$ against various literature sources, including:
+
+- Land surface model simulations [@hope_2015_economic; @schaefer_2011_amount; @burke_2017_quantifying].
+    - Try to calibrate against NPP and soil respiration if possible
+- Literature surveys [@schaefer_2014_impact] 
+- Warming experiments [@wickland_2006_effects]
+- TODO: Others?
+
+Some of these are time series, while others are individual estimates at particular points in time.
+To give them equal weight in the likelihood, we down-weight the time series likelihoods by the number of time steps.
+
+We derived a distribution for the Arctic warming factor from TODO.
+
+TODO: Table and multi-panel figure of input datasets.
+
+For the $\alpha$ and $\phi$ parameters in case 3, we looked at the literature on permafrost methane emissions [e.g., @wickland_2006_effects].
+
+
+## Initial conditions
+
+For case 1, we use the Hector defaults [@hartin_2015_simple].
+
+For cases 2 and 3, we assumed the same total pool sizes as case 1, but divided them into the permafrost and non-permafrost biomes according to TODO.
+
+
 ## Other notes
 
 Frozen carbon residence time (FCRt) from [@burke_2017_quantifying]:
@@ -137,8 +175,30 @@ $$ FCRt = FCRt0 * exp(-ΔT / Γ) (for ΔT > 0.2 °C) $$
 - $FCRt_0$ (years) reflects the stability of permafrost C (length of time that permafrost C is stable when $\Delta T = 0$)
 - $\Gamma$ -- decay term (°C); temperature change at which "the number of years taken for all of the old permafrost C to be emitted reduces to 1/e of its initial value"
 
+Other Hector parameters to consider.
+
+| Variable | INI name | Description                                 | Value |
+|----------|----------|---------------------------------------------|-------|
+| $f_{nv}$ | `f_nppv` | Fraction of NPP C transferred to vegetation | 0.35  |
+| $f_{nd}$ | `f_nppd` | Fraction of NPP C transferred to detritus   | 0.60  |
+| $f_{nd}$ |          | Fraction of NPP C transferred to soil       | 0.05  |
+| $f_{lv}$ | `f_lucv` | Fraction of LUC change flux from vegetation | 0.10  |
+| $f_{ld}$ | `f_lucd` | Fraction of LUC change flux from detritus   | 0.01  |
+| $f_{ls}$ |          | Fraction of LUC change flux from soil       | 0.89  |
+| $f_{ds}$ |          | Fraction of detritus C that goes to soil    | 0.60  |
+| $f_{rd}$ |          | Fraction of respiration C to detritus       | 0.25  |
+| $f_{rs}$ |          | Fraction of respriation C to soil           | 0.02  |
+
+According to [@hartin_2015_simple], these were selected to be "generally consistent with previous simple earth system models [e.g., @meinshausen_2011_emulating]".
+
 
 # Results
+
+**Figure**: Parameter distributions from calibration.
+
+**Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
+
+**Figure**: PEcAn-like variance decomposition of parameters (for each parameter: sensitivity, uncertainty, and partial variance)
 
 ```{r get-data, eval = FALSE}
 # Note the path that we need to use to access our data files when rendering this document
