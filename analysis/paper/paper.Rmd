@@ -11,7 +11,7 @@ output:
     bookdown::html_document2:
       fig_caption: yes
       reference_docx: "../templates/template.docx"
-bibliography: references.bib
+bibliography: ["references.bib", "packages.bib"]
 csl: "../templates/biogeosciences.csl"
 abstract: |
   Text of abstract

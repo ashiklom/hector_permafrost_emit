@@ -3,7 +3,8 @@
 stopifnot(
   requireNamespace("jsonlite", quietly = TRUE),
   requireNamespace("rlang", quietly = TRUE),
-  requireNamespace("bibtex", quietly = TRUE)
+  requireNamespace("bibtex", quietly = TRUE),
+  requireNamespace("knitr", quietly = TRUE)
 )
 
 arg <- commandArgs(trailingOnly = TRUE)
@@ -35,4 +36,12 @@ bibfile <- bibtex::read.bib(reffile)
 selected_references <- bibfile[citations]
 message("Writing ", length(selected_references), " citations to file ", outfile)
 bibtex::write.bib(selected_references, outfile)
+message("Done!")
+
+# Write package citations
+message("Writing package citations to file...")
+cite_pkgs <- c(
+  "BayesianTools"
+)
+knitr::write_bib(cite_pkgs, "analysis/paper/packages.bib")
 message("Done!")
