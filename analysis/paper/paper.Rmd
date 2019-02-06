@@ -111,6 +111,25 @@ Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
 
 ## Modeling permafrost emissions
 
+Default heterotrophic respiration ($R$) scheme for a pool $p$ (detritus or soil) in Hector:
+
+$$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
+
+This is case 1.
+
+Case 2 uses the same formulation, but splits permafrost C into its own "biome", with its own photosynthesis ($\Beta$) and respiration ($Q_{10}$) parameters.
+
+Case 3 extends Case 2 by calculating CO~2~ and CH~4~ emissions as a fraction of the total respiration, controlled by two new parameters $\alpha$ and $\phi$:
+
+$$ R_{p,tot} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
+
+$$ R_{p, CH_4} = \alpha R_{p, tot} $$
+
+$$ R_{p, CO_2} = (1 - \alpha) ^ \phi R_{p, tot} $$
+
+
+## Other notes
+
 Frozen carbon residence time (FCRt) from [@burke_2017_quantifying]:
 
 $$ FCRt = FCRt0 * exp(-ΔT / Γ) (for ΔT > 0.2 °C) $$
