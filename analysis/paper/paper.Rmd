@@ -62,7 +62,9 @@ Several studies have attempted to evaluate the potential economic impacts of cur
 @lawrence_2012_simulation project declines in near-surface permafrost by 33% and 72% in RCP 2.6 and 8.5, respectively, and permafrost C feedback will stabilize at 2100 in RCP 2.6.
 More recently, @hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
 They found that XXX.
+@chen_2019_economic also used PAGE09.
 Similarly, @gonzalez-eguino_2016_significant used the DICE (TODO: write in full) model to XXX.
+@kessler_2017_estimating also used DICE.
 
 @hope_2015_economic (and others?) rely on climate damage functions of the general form $\delta GDP = f(\delta T)$.
 Such functions are, at best, highly uncertain (TODO REF), and possibly conceptually flawed (TODO REF).
