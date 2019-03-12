@@ -5,7 +5,7 @@ requireNamespace("future", quietly = TRUE)
 
 # begin imports
 import::from("tibble", "as_tibble", .into = "")
-import::from("dplyr", "bind_rows", "bind_cols", .into = "")
+import::from("dplyr", "bind_rows", "bind_cols", "filter", .into = "")
 import::from("cowplot", "plot_grid", .into = "")
 import::from("parallel", "detectCores", .into = "")
 import::from("magrittr", "%>%", .into = "")
@@ -72,7 +72,7 @@ plan <- drake_plan(
     transform = combine(ts)
   ),
   # Scatter plot of values in 2100
-  lastyear = dplyr::filter(all_sims, year == 2100),
+  lastyear = filter(all_sims, year == 2100),
   scatter_common = ggplot(lastyear) +
     aes(y = value) +
     facet_wrap(vars(variable), scales = "free_y") +
