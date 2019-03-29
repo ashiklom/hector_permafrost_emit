@@ -98,3 +98,13 @@ ggplot(lastyear) +
   facet_wrap(vars(variable), scales = "free_y")
 
 ##################################################
+if (FALSE) {
+  devtools::install("~/Projects/hector_project/hector")
+}
+
+library(hector)
+rcp45 <- system.file("input", "hector_rcp45.ini", package = "hector")
+core <- newcore(rcp45, suppresslogging = TRUE, name = "mytest")
+
+fetchvars(core, NA, "f_nppv")
+setvar(core, NA, "f_nppv", )
