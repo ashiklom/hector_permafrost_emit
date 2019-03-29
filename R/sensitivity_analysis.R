@@ -12,18 +12,45 @@
 #' - "Elasticity" is the normalized sensitivity of the model to a
 #' change in one parameter.
 #'
+#' - "Partial variance" is the fraction of variance in the model
+#' output that is explained by the given parameter. In essence, it
+#' integrates the information provided by the CV and elasticity.
+#'
+#' The theory and implementation are based on the sensitivity analysis
+#' described by [LeBauer et al.
+#' (2013)](https://doi.org/10.1890/12-0137.1), but with several key
+#' differences:
+#'
+#' - LeBauer et al. use a cubic spline interpolation through each
+#' point in the model output. This function uses local polynomial
+#' regression ([stats::loess()]).
+#' - LeBauer et al. fit individual splines to each parameter-output
+#' combination where other parameters are held constant at their
+#' median. This function fits a multivariate local polynomial
+#' regression (either additive or interactive, based on the `.type`
+#' argument), and then uses that fit to calculate the partial derivatives.
+#'
 #' @param df `data.frame` of Hector results.
 #' @param ... Unquoted names of columns describing parameters to be
 #'   used in sensitivity analysis.
+#' @param .type Whether the multivariate fit is "additive" (`Y ~ a + b +
+#'   c`, default) or "interactive" (`Y ~ a * b * c`). This argument
+#'   supports partial matching via [base::match.arg()].
 #' @return `data.frame` of sensitivity analysis results. See Details.
 #' @author Alexey Shiklomanov
 #' @export
-sensitivity_analysis <- function(df, ...) {
+sensitivity_analysis <- function(df, ..., .type = "additive") {
+  .type <- match.arg(.type, c("additive", "interactive"))
+  .collapse <- switch(.type,
+                      "additive" = " + ",
+                      "interactive" = " * ")
+
   params_q <- rlang::enquos(...)
   params_s <- purrr::map_chr(params_q, rlang::quo_name)
   pqs <- purrr::map(params_q, pq) %>% purrr::reduce(c)
-  rhs <- paste(params_s, collapse = " + ")
+  rhs <- paste(params_s, collapse = .collapse)
   form <- paste0("value ~ ", rhs)
+  message("Formula is: ", form)
   pred_qs <- purrr::map(seq_along(params_q), pred_q, x = params_q) %>%
     purrr::reduce(c)
   name_vars <- purrr::map(params_s, mksym, "_var")

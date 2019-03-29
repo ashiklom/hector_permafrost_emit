@@ -4,13 +4,16 @@
 \alias{sensitivity_analysis}
 \title{Parameter sensitivity analysis}
 \usage{
-sensitivity_analysis(df, ...)
+sensitivity_analysis(df, ..., .type = "additive")
 }
 \arguments{
 \item{df}{\code{data.frame} of Hector results.}
 
 \item{...}{Unquoted names of columns describing parameters to be
 used in sensitivity analysis.}
+
+\item{.type}{Whether the multivariate fit is "additive" (\code{Y ~ a + b + c}, default) or "interactive" (\code{Y ~ a * b * c}). This argument
+supports partial matching via \code{\link[base:match.arg]{base::match.arg()}}.}
 }
 \value{
 \code{data.frame} of sensitivity analysis results. See Details.
@@ -27,6 +30,23 @@ uncertainty of the input parameter. It is calculated as the ratio
 between the input parameter variance and its median value.
 \item "Elasticity" is the normalized sensitivity of the model to a
 change in one parameter.
+\item "Partial variance" is the fraction of variance in the model
+output that is explained by the given parameter. In essence, it
+integrates the information provided by the CV and elasticity.
+}
+
+The theory and implementation are based on the sensitivity analysis
+described by \href{https://doi.org/10.1890/12-0137.1}{LeBauer et al. (2013)}, but with several key
+differences:
+\itemize{
+\item LeBauer et al. use a cubic spline interpolation through each
+point in the model output. This function uses local polynomial
+regression (\code{\link[stats:loess]{stats::loess()}}).
+\item LeBauer et al. fit individual splines to each parameter-output
+combination where other parameters are held constant at their
+median. This function fits a multivariate local polynomial
+regression (either additive or interactive, based on the \code{.type}
+argument), and then uses that fit to calculate the partial derivatives.
 }
 }
 \author{
