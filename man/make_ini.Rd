@@ -14,7 +14,7 @@ make_ini(exo_csv, ini_in, ini_out)
 \item{ini_out}{Target path for output INI file}
 }
 \value{
-`ini_out`, invisibly
+\code{ini_out}, invisibly
 }
 \description{
 Add exogenous CSV data to a Hector INI file

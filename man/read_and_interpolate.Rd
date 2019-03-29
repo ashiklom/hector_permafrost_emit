@@ -10,20 +10,20 @@ read_and_interpolate(file, start_year = NULL, end_year = 2100,
 \arguments{
 \item{file}{Raw emissions data file}
 
-\item{start_year}{Target start year for interpolation. If `NULL`
+\item{start_year}{Target start year for interpolation. If \code{NULL}
 (default), use smallest year in input data.}
 
-\item{end_year}{Target end year for interpolation. If `NULL`
+\item{end_year}{Target end year for interpolation. If \code{NULL}
 (default), use largest year in input data.}
 
 \item{scale}{Numeric factor by which to multiply values, e.g. to
 convert units (default = 1; i.e. no conversion).}
 
-\item{...}{Additional arguments to [readr::read_csv()].}
+\item{...}{Additional arguments to \code{\link[readr:read_csv]{readr::read_csv()}}.}
 }
 \value{
-`data.frame` containing interpolated data, with columns
-  `year` and `value`.
+\code{data.frame} containing interpolated data, with columns
+\code{year} and \code{value}.
 }
 \description{
 Read raw emissions data file and interpolate to target years

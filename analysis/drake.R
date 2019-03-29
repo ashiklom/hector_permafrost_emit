@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library(drake)
 library(ggplot2)
 
@@ -5,10 +6,12 @@ requireNamespace("future", quietly = TRUE)
 
 # begin imports
 import::from("tibble", "as_tibble", .into = "")
-import::from("dplyr", "bind_rows", "bind_cols", "filter", .into = "")
-import::from("cowplot", "plot_grid", .into = "")
+import::from("dplyr", "bind_rows", "bind_cols", "filter", "group_by",
+             "summarize", "mutate", "ungroup", .into = "")
+import::from("cowplot", "plot_grid", "theme_cowplot", .into = "")
 import::from("parallel", "detectCores", .into = "")
 import::from("magrittr", "%>%", .into = "")
+import::from("tidyr", "gather", .into = "")
 # end imports
 
 devtools::load_all(".")
@@ -73,6 +76,23 @@ plan <- drake_plan(
   ),
   # Scatter plot of values in 2100
   lastyear = filter(all_sims, year == 2100),
+  sensitivity = lastyear %>%
+    group_by(variable) %>%
+    sensitivity_analysis(beta, q10) %>%
+    tidy_sensitivity(),
+  sensitivity_plot = sensitivity %>%
+    filter(
+      parameter != "total",
+      stat != "sens",
+      stat != "var"
+    ) %>%
+    ggplot() +
+    aes(x = parameter, y = value) +
+    geom_segment(aes(x = parameter, y = 0, xend = parameter, yend = value)) +
+    geom_point() +
+    coord_flip() +
+    facet_grid(cols = vars(stat), rows = vars(variable), scales = "free_x") +
+    theme_bw(),
   scatter_common = ggplot(lastyear) +
     aes(y = value) +
     facet_wrap(vars(variable), scales = "free_y") +
@@ -88,5 +108,23 @@ plan <- drake_plan(
     transform = combine(scatter)
   )
 )
-dconf <- drake_config(plan)
-make(plan, parallelism = "future", jobs = detectCores())
+
+is_callr <- Sys.getenv("CALLR") == "true"
+
+dconf <- drake_config(
+  plan,
+  parallelism = "future",
+  jobs = ifelse(is_callr, 1, parallel::detectCores()),
+  prework = quote({
+    devtools::load_all(".")
+  })
+)
+
+if (interactive()) {
+  r_make("analysis/drake.R",
+         r_args = list(env = c(callr::rcmd_safe_env(), "CALLR" = "true")))
+} else if (is_callr) {
+  dconf
+} else {
+  make(config = dconf)
+}

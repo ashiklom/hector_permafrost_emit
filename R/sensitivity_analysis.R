@@ -1,0 +1,127 @@
+#' Parameter sensitivity analysis
+#'
+#' Perform a PEcAn-like parameter sensitivity analysis to analyze the
+#' contribution of parameters to predictive uncertainty.
+#'
+#' This analysis produces three key metrics:
+#'
+#' - "Coefficient of variation (CV)" describes the relative
+#' uncertainty of the input parameter. It is calculated as the ratio
+#' between the input parameter variance and its median value.
+#'
+#' - "Elasticity" is the normalized sensitivity of the model to a
+#' change in one parameter.
+#'
+#' @param df `data.frame` of Hector results.
+#' @param ... Unquoted names of columns describing parameters to be
+#'   used in sensitivity analysis.
+#' @return `data.frame` of sensitivity analysis results. See Details.
+#' @author Alexey Shiklomanov
+#' @export
+sensitivity_analysis <- function(df, ...) {
+  params_q <- rlang::enquos(...)
+  params_s <- purrr::map_chr(params_q, rlang::quo_name)
+  pqs <- purrr::map(params_q, pq) %>% purrr::reduce(c)
+  rhs <- paste(params_s, collapse = " + ")
+  form <- paste0("value ~ ", rhs)
+  pred_qs <- purrr::map(seq_along(params_q), pred_q, x = params_q) %>%
+    purrr::reduce(c)
+  name_vars <- purrr::map(params_s, mksym, "_var")
+  partial_vars <- purrr::map(name_vars, ~rlang::quo(!!.x / total_var))
+  names(partial_vars) <- paste0(params_s, "_partial_var")
+  df %>%
+    dplyr::summarize(
+      !!!pqs,
+      value_median = median(value),
+      lfit = list(loess(as.formula(form))),
+      !!!pred_qs
+    ) %>%
+    dplyr::mutate(
+      total_var = purrr::reduce(list(!!!name_vars), `+`),
+      !!!partial_vars
+    )
+}
+
+#' Clean up the output of the sensitivity analysis
+#'
+#' Remove extraneous columns, reshape the data to a long format, and
+#' break up the output column names into meaningful pieces.
+#'
+#' @param sensitivity_out Output of [sensitivity_analysis()]
+#' @return Tidy `data.frame` of sensitivity output
+#' @export
+tidy_sensitivity <- function(sensitivity_out) {
+  result <- sensitivity_out %>%
+    dplyr::select(
+      -dplyr::ends_with("median"),
+      -dplyr::ends_with("pred"),
+      -dplyr::ends_with("df"),
+      -lfit
+    ) %>%
+    tidyr::gather(result_type, value, -variable) %>%
+    tidyr::separate(result_type, c("parameter", "stat"),
+                    sep = "_", extra = "merge")
+}
+
+#' Helper functions for performing the sensitivity analysis calculations
+#'
+#' These functions heavily leverage `rlang`'s quasiquotation mechanism
+#' to build the code that will be used to perform the sensitivity
+#' analysis.
+#'
+#' `pq` builds the
+#'
+#' @param param Unquoted name of a parameter
+#' @param x Parameters in sensitivity analysis, as a list of symbols
+#' @param i Index of target parameter for sensitivity calculations
+#' @return Both functions return a list of quosures (via
+#'   [rlang::quos()]), which are then spliced together in the main
+#'   [sensitivity_analysis()] function.
+#' @seealso [mksym()] for creating column names, [rlang::`!!()`] and [rlang::`!!!()`]
+pq <- function(param) {
+  param <- rlang::enquo(param)
+  name_median <- mksym(param, "_median")
+  name_cv <- mksym(param, "_cv")
+  name_pred <- mksym(param, "_pred")
+  rlang::quos(
+    !!name_median := median(!!param),
+    !!name_cv := var(!!param) / !!name_median,
+    !!name_pred := list(!!name_median * c(0.99, 1.01))
+  )
+}
+
+#' @rdname pq
+pred_q <- function(x, i) {
+  xchar <- purrr::map_chr(x, rlang::quo_name)
+  xnames <- c(xchar[i], xchar[-i])
+  first <- mksym(x[[i]], "_pred")
+  then <- purrr::map(x[-i], mksym, "_median")
+  l_dpred <- c(first, then)
+  names(l_dpred) <- xnames
+  name_dpred <- mksym(x[[i]], "_dpred")
+  name_sens <- mksym(x[[i]], "_sens")
+  name_sens_df <- mksym(x[[i]], "_sens_df")
+  name_sens_pred <- mksym(x[[i]], "_sens_pred")
+  name_elas <- mksym(x[[i]], "_elas")
+
+  l_vpred <- c(x[[i]], then)
+  names(l_vpred) <- xnames
+  name_vpred <- mksym(x[[i]], "_vpred")
+  name_vpred_df <- mksym(x[[i]], "_vpred_df")
+  name_var <- mksym(x[[i]], "_var")
+
+  first_median <- mksym(x[[i]], "_median")
+
+  rlang::quos(
+    # Sensitivity
+    !!name_sens_df := list(data.frame(!!!l_dpred)),
+    !!name_sens_pred := list(predict(lfit, !!name_sens_df)),
+    !!name_sens := diff(!!name_sens_pred) / diff(!!first),
+    # Elasticity = normalized sensitivity
+    !!name_elas := !!name_sens / (value_median / !!first_median),
+    # Prediction variance
+    !!name_vpred_df := list(data.frame(!!!l_vpred)),
+    !!name_vpred := list(predict(lfit, !!name_vpred_df)),
+    !!name_var := var(!!name_vpred)
+  )
+}

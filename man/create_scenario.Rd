@@ -10,31 +10,31 @@ create_scenario(cc = NULL, ch4_frac = NULL, co2 = NULL, ch4 = NULL,
   base_scenario, "_emissions.csv"), package = "hector"), ...)
 }
 \arguments{
-\item{cc}{`data.frame` of total carbon (C) emissions, with columns
-`year` and `value` (emissions in GtC/yr).}
+\item{cc}{\code{data.frame} of total carbon (C) emissions, with columns
+\code{year} and \code{value} (emissions in GtC/yr).}
 
 \item{ch4_frac}{Fraction of carbon emitted as methane. Length must
-be either 1 or `nrow(cc)`.}
+be either 1 or \code{nrow(cc)}.}
 
-\item{co2}{`data.frame` of CO2 emissions (same structure as `cc`)}
+\item{co2}{\code{data.frame} of CO2 emissions (same structure as \code{cc})}
 
-\item{ch4}{`data.frame` of CH4 emissions (same structure as `cc`)}
+\item{ch4}{\code{data.frame} of CH4 emissions (same structure as \code{cc})}
 
-\item{base_scenario_data}{`data.frame` containing baseline
+\item{base_scenario_data}{\code{data.frame} containing baseline
 scenario, onto which CO2 and CH4 emissions will be added. If
-`NULL` (default), read from `base_scenario_file`}
+\code{NULL} (default), read from \code{base_scenario_file}}
 
 \item{base_scenario}{Character describing base scenario (default = "RCP45").}
 
 \item{base_scenario_file}{Path to base emissions file (default is
-`hector` package RCP 4.5 emissions file).}
+\code{hector} package RCP 4.5 emissions file).}
 
-\item{...}{Additional arguments to [readr::read_csv()] for reading
+\item{...}{Additional arguments to \code{\link[readr:read_csv]{readr::read_csv()}} for reading
 scenario file}
 }
 \value{
-`data.frame` containing Hector emissions, with additional
-  CO2 and CH4 emissions added to target years.
+\code{data.frame} containing Hector emissions, with additional
+CO2 and CH4 emissions added to target years.
 }
 \description{
 Create a Hector emissions scenario

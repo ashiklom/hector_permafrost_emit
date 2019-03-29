@@ -9,25 +9,28 @@ run_hector_emissions(rcp, exo_emissions_df = NULL,
 }
 \arguments{
 \item{rcp}{Character describing RCP to use as baseline. Must be one
-of `"26", "45", "60", "85"`.}
+of \code{"26", "45", "60", "85"}.}
 
-\item{exo_emissions_df}{`data.frame` containing exogenous emissions
-data. Must contain column `Date` (year of emissions), and one (or
-both) of `exo_emissions` (exogenous CO2 emissions) or
-`exo_ch4_emissions` (for CH4).}
+\item{exo_emissions_df}{\code{data.frame} containing exogenous emissions
+data. Must contain column \code{Date} (year of emissions), and one (or
+both) of \code{exo_emissions} (exogenous CO2 emissions) or
+\code{exo_ch4_emissions} (for CH4).}
 
 \item{suppresslogging}{(bool) If true, suppress all logging (loglevel is ignored in this case).}
 
 \item{...}{Arguments passed on to \code{hector::newcore}
 \describe{
-  \item{inifile}{(String) name of the hector input file.}
+  \item{inifile}{(String) name of the hector input file, or INI list
+such as that returned by \code{\link{read_ini}}. If passed as a
+list, the INI file is first written to a temporary file, the
+path to which is then passed to Hector.}
   \item{loglevel}{(int) minimum message level to output in logs (see \code{\link{loglevels}}).}
   \item{suppresslogging}{(bool) If true, suppress all logging (loglevel is ignored in this case).}
   \item{name}{(string) An optional name to identify the core.}
 }}
 }
 \value{
-Hector output, as `data.frame` (see [hector::fetchvars()]).
+Hector output, as \code{data.frame} (see \code{\link[hector:fetchvars]{hector::fetchvars()}}).
 }
 \description{
 Run Hector with custom emissions
