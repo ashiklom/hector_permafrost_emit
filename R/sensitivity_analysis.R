@@ -22,13 +22,13 @@
 #' differences:
 #'
 #' - LeBauer et al. use a cubic spline interpolation through each
-#' point in the model output. This function uses local polynomial
-#' regression ([stats::loess()]).
+#' point in the model output. This function uses a generalized
+#' additive model regression ([mgcv::gam()]).
 #' - LeBauer et al. fit individual splines to each parameter-output
 #' combination where other parameters are held constant at their
-#' median. This function fits a multivariate local polynomial
-#' regression (either additive or interactive, based on the `.type`
-#' argument), and then uses that fit to calculate the partial derivatives.
+#' median. This function fits a multivariate generalized additive
+#' regression model, and then uses that fit to calculate the partial
+#' derivatives.
 #'
 #' @param df `data.frame` of Hector results.
 #' @param ... Unquoted names of columns describing parameters to be
@@ -50,21 +50,20 @@ sensitivity_analysis <- function(df, ..., .type = "additive") {
   pqs <- purrr::map(params_q, pq) %>% purrr::reduce(c)
   rhs <- paste(params_s, collapse = .collapse)
   form <- paste0("value ~ ", rhs)
-  message("Formula is: ", form)
   pred_qs <- purrr::map(seq_along(params_q), pred_q, x = params_q) %>%
     purrr::reduce(c)
-  name_vars <- purrr::map(params_s, mksym, "_var")
-  partial_vars <- purrr::map(name_vars, ~rlang::quo(!!.x / total_var))
-  names(partial_vars) <- paste0(params_s, "_partial_var")
+  name_vars <- purrr::map(params_s, mksym, "..var")
+  partial_vars <- purrr::map(name_vars, ~rlang::quo(!!.x / total..var))
+  names(partial_vars) <- paste0(params_s, "..partial_var")
   df %>%
     dplyr::summarize(
       !!!pqs,
       value_median = median(value),
-      lfit = list(loess(as.formula(form))),
+      lfit = list(mgcv::gam(as.formula(form))),
       !!!pred_qs
     ) %>%
     dplyr::mutate(
-      total_var = purrr::reduce(list(!!!name_vars), `+`),
+      total..var = purrr::reduce(list(!!!name_vars), `+`),
       !!!partial_vars
     )
 }
@@ -87,7 +86,7 @@ tidy_sensitivity <- function(sensitivity_out) {
     ) %>%
     tidyr::gather(result_type, value, -variable) %>%
     tidyr::separate(result_type, c("parameter", "stat"),
-                    sep = "_", extra = "merge")
+                    sep = "\\.\\.", extra = "merge")
 }
 
 #' Helper functions for performing the sensitivity analysis calculations
@@ -107,9 +106,9 @@ tidy_sensitivity <- function(sensitivity_out) {
 #' @seealso [mksym()] for creating column names, [rlang::`!!()`] and [rlang::`!!!()`]
 pq <- function(param) {
   param <- rlang::enquo(param)
-  name_median <- mksym(param, "_median")
-  name_cv <- mksym(param, "_cv")
-  name_pred <- mksym(param, "_pred")
+  name_median <- mksym(param, "..median")
+  name_cv <- mksym(param, "..cv")
+  name_pred <- mksym(param, "..pred")
   rlang::quos(
     !!name_median := median(!!param),
     !!name_cv := var(!!param) / !!name_median,
@@ -121,23 +120,23 @@ pq <- function(param) {
 pred_q <- function(x, i) {
   xchar <- purrr::map_chr(x, rlang::quo_name)
   xnames <- c(xchar[i], xchar[-i])
-  first <- mksym(x[[i]], "_pred")
-  then <- purrr::map(x[-i], mksym, "_median")
+  first <- mksym(x[[i]], "..pred")
+  then <- purrr::map(x[-i], mksym, "..median")
   l_dpred <- c(first, then)
   names(l_dpred) <- xnames
-  name_dpred <- mksym(x[[i]], "_dpred")
-  name_sens <- mksym(x[[i]], "_sens")
-  name_sens_df <- mksym(x[[i]], "_sens_df")
-  name_sens_pred <- mksym(x[[i]], "_sens_pred")
-  name_elas <- mksym(x[[i]], "_elas")
+  name_dpred <- mksym(x[[i]], "..dpred")
+  name_sens <- mksym(x[[i]], "..sens")
+  name_sens_df <- mksym(x[[i]], "..sens_df")
+  name_sens_pred <- mksym(x[[i]], "..sens_pred")
+  name_elas <- mksym(x[[i]], "..elas")
 
   l_vpred <- c(x[[i]], then)
   names(l_vpred) <- xnames
-  name_vpred <- mksym(x[[i]], "_vpred")
-  name_vpred_df <- mksym(x[[i]], "_vpred_df")
-  name_var <- mksym(x[[i]], "_var")
+  name_vpred <- mksym(x[[i]], "..vpred")
+  name_vpred_df <- mksym(x[[i]], "..vpred_df")
+  name_var <- mksym(x[[i]], "..var")
 
-  first_median <- mksym(x[[i]], "_median")
+  first_median <- mksym(x[[i]], "..median")
 
   rlang::quos(
     # Sensitivity

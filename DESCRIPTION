@@ -15,6 +15,7 @@ Imports:
     bookdown,
     dplyr,
     hector,
+    mgcv,
     purrr,
     rlang,
     tidyr

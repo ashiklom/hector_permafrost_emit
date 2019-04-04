@@ -20,10 +20,7 @@ both) of \code{exo_emissions} (exogenous CO2 emissions) or
 
 \item{...}{Arguments passed on to \code{hector::newcore}
 \describe{
-  \item{inifile}{(String) name of the hector input file, or INI list
-such as that returned by \code{\link{read_ini}}. If passed as a
-list, the INI file is first written to a temporary file, the
-path to which is then passed to Hector.}
+  \item{inifile}{(String) name of the hector input file.}
   \item{loglevel}{(int) minimum message level to output in logs (see \code{\link{loglevels}}).}
   \item{suppresslogging}{(bool) If true, suppress all logging (loglevel is ignored in this case).}
   \item{name}{(string) An optional name to identify the core.}

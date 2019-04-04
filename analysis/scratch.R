@@ -108,3 +108,38 @@ core <- newcore(rcp45, suppresslogging = TRUE, name = "mytest")
 
 fetchvars(core, NA, "f_nppv")
 setvar(core, NA, "f_nppv", )
+
+##################################################
+library(ggplot2)
+
+# Dirichlet distribution
+means <- c(nppv = 0.35, nppd = 0.6)
+palpha <- c(means, npps = 1 - sum(means))
+alpha <- palpha / salpha
+draws <- rdirichlet(1000, alpha)
+GGally::ggpairs(as.data.frame(draws))
+
+l <- list(id = 1, a = 5, b = 6)
+l[["id"]] <- NULL
+
+x <- hector_with_params(id = 1, beta = 0.36, q10_rh = 2)
+
+##################################################
+z <- tibble(
+  x = structure(rnorm(100), unit = "cm"),
+  y = runif(100)
+)
+
+attr(z$y, "unit")
+
+##################################################
+lastyear
+dat <- filter(lastyear, variable == "Tgav")
+fit <- mgcv::gam(value ~ beta + q10_rh + f_nppv + f_nppd + f_litterd, data = dat)
+summary(fit)
+pred_df <- lastyear %>% dplyr::select(q10_rh:f_litterd, -dplyr::starts_with("f_luc")) %>%
+  dplyr::slice(1) %>%
+  as.list() %>%
+  modifyList(list(beta = c(0.03, 0.04))) %>%
+  tibble::as_tibble()
+pred <- predict(fit, pred_df)

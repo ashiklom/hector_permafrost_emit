@@ -2,6 +2,7 @@
 
 export(create_scenario)
 export(ddirichlet)
+export(hector_with_params)
 export(make_ini)
 export(make_xmls)
 export(rdirichlet)
