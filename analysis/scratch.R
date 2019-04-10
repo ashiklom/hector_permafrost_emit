@@ -143,3 +143,19 @@ pred_df <- lastyear %>% dplyr::select(q10_rh:f_litterd, -dplyr::starts_with("f_l
   modifyList(list(beta = c(0.03, 0.04))) %>%
   tibble::as_tibble()
 pred <- predict(fit, pred_df)
+
+##################################################
+library(drake)
+library(tidyverse)
+dat <- readd(lastyear) %>%
+  filter(variable == "Tgav")
+means <- dat %>% summarize_at(vars(beta:f_litterd), mean)
+
+fit1 <- mgcv::gam(value ~ beta + q10_rh + f_nppv + f_nppd + f_litterd, data = dat)
+fit2 <- mgcv::gam(value ~ s(beta) + s(q10_rh) + s(f_nppv) + s(f_nppd) + s(f_litterd), data = dat)
+
+pd <- as_tibble(modifyList(as.list(means), list(beta = seq(0.1, 1, 0.1))))
+y <- predict(fit2, pd, se.fit = TRUE)
+plot(pd$beta, y$fit)
+lines(pd$beta, y$fit + y$se.fit, lty= "dashed")
+lines(pd$beta, y$fit - y$se.fit, lty= "dashed")
