@@ -144,18 +144,22 @@ pred_df <- lastyear %>% dplyr::select(q10_rh:f_litterd, -dplyr::starts_with("f_l
   tibble::as_tibble()
 pred <- predict(fit, pred_df)
 
-##################################################
+###############################################
+# Sensitivity analysis using Gaussian Process #
+###############################################
 library(drake)
 library(tidyverse)
 dat <- readd(lastyear) %>%
   filter(variable == "Tgav")
 means <- dat %>% summarize_at(vars(beta:f_litterd), mean)
 
-fit1 <- mgcv::gam(value ~ beta + q10_rh + f_nppv + f_nppd + f_litterd, data = dat)
-fit2 <- mgcv::gam(value ~ s(beta) + s(q10_rh) + s(f_nppv) + s(f_nppd) + s(f_litterd), data = dat)
-
+dat_in <- dat %>% select(beta:f_litterd) %>% as.matrix()
+fitgp <- mlegp::mlegp(dat_in, dat$value)
 pd <- as_tibble(modifyList(as.list(means), list(beta = seq(0.1, 1, 0.1))))
-y <- predict(fit2, pd, se.fit = TRUE)
-plot(pd$beta, y$fit)
-lines(pd$beta, y$fit + y$se.fit, lty= "dashed")
-lines(pd$beta, y$fit - y$se.fit, lty= "dashed")
+y <- predict(fitgp, pd, se.fit = TRUE)
+## plot(pd$beta, y$fit, xlim = range(dat$beta, pd$beta))
+
+plot(pd$beta, y$fit, ylim = range(y$fit + c(1, -1) * y$se.fit))
+## points(dat$beta, dat$value, col = "red")
+lines(pd$beta, y$fit + y$se.fit, lty = "dashed")
+lines(pd$beta, y$fit - y$se.fit, lty = "dashed")
