@@ -8,6 +8,8 @@ DEPLOY_DIR=analysis/paper/_deploy
 mkdir -p "$DEPLOY_DIR"
 cp -Rf analysis/paper/paper{.md,.html,.pdf,_files} "$DEPLOY_DIR"
 
+HASH=$(git rev-parse --short HEAD)
+
 cd "$DEPLOY_DIR"
 
 if [[ ! -f index.html ]]; then
@@ -24,7 +26,7 @@ fi
 
 if [[ -n $(git status --short) ]]; then
     git add .
-    MSG=`date "+Update paper <%Y-%m-%d %H:%M>"`
+    MSG="Update paper <$HASH>"
     git commit -a -m "$MSG"
     git push --force origin gh-pages
 else
