@@ -4,7 +4,7 @@
 \alias{hector_with_params}
 \title{Run Hector with parameters set to specific values}
 \usage{
-hector_with_params(..., .dots = list(), rcp = "45")
+hector_with_params(..., .dots = list(), rcp = "45", core = NULL)
 }
 \arguments{
 \item{...}{Named list of parameter values (e.g. \code{beta = 0.3}).
@@ -12,12 +12,20 @@ Names must match Hector parameter names.}
 
 \item{.dots}{A named list of arguments. Provides an alternative
 specification to \code{...}}
+
+\item{rcp}{Representative carbon pathway (RCP) to use. One of
+\code{"26"}, \code{"45"}, \code{"60"}, \code{"85"}}
+
+\item{core}{(Optional) An existing Hector core to modify.}
+}
+\value{
+Hector output, as a \code{data.frame}
 }
 \description{
 To specify units, set the \code{unit} attribute of the parameter.
 }
 \examples{
-hector_with_params(beta = 0.5, q10_rh = )
+hector_with_params(beta = 0.5, q10_rh = 1.8)
 }
 \author{
 Alexey Shiklomanov

@@ -18,7 +18,9 @@ Imports:
     mgcv,
     purrr,
     rlang,
-    tidyr
+    tidyr,
+    hectortools,
+    tibble
 Suggests: 
     testthat
 RoxygenNote: 6.1.1

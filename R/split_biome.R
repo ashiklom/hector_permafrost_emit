@@ -1,8 +1,26 @@
-split_biome <- function(core, biome_name,
+#' Create a Hector core with a split biome
+#'
+#' @param biome_name (Character) Name of new biome
+#' @param frac_veg Fraction of global vegetation C in new biome.
+#'   Default is 0.5.
+#' @param frac_soil Fraction of global soil C in new biome. Default is `frac_veg`.
+#' @param frac_detritus Fraction of global detritus C in new biome.
+#'   Default is `frac_soil` (which in turn defaults to `frac_veg`)
+#' @param frac_npp_flux0 Fraction if global initial NPP flux in new
+#'   biome. Default is `frac_veg`.
+#' @inheritParams hector_with_params
+#' @return Hector core with biomes `"global"` and `biome_name`
+#' @author Alexey Shiklomanov
+#' @export
+split_biome <- function(biome_name,
                         frac_veg = 0.5,
                         frac_soil = frac_veg,
                         frac_detritus = frac_soil,
-                        frac_npp_flux0 = frac_veg) {
+                        frac_npp_flux0 = frac_veg,
+                        rcp = "45") {
+  ini_file <- system.file("input", paste0("hector_rcp", rcp, ".ini"),
+                          package = "hector")
+  ini <- hectortools::read_ini(ini_file)
   frac_tbl <- tibble::tribble(
     ~variable, ~frac,
     hector::VEGC(), frac_veg,
@@ -10,7 +28,10 @@ split_biome <- function(core, biome_name,
     hector::DETRITUSC(), frac_detritus,
     hector::NPP_FLUX0(), frac_npp_flux0
   )
-  inits <- hector::fetchvars(core, NA, frac_tbl[["variable"]])
+  inits <- ini[["simpleNbox"]][gsub("global\\.", "", frac_tbl[["variable"]])] %>%
+    unlist() %>%
+    tibble::enframe("variable", "value") %>%
+    dplyr::mutate(variable = paste0("global.", variable))
   new_biome <- inits %>%
     dplyr::left_join(frac_tbl, by = "variable") %>%
     dplyr::mutate(variable = gsub("global", biome_name, variable),
@@ -29,28 +50,19 @@ split_biome <- function(core, biome_name,
     hector::F_LITTERD(),
     hector::WARMINGFACTOR()
   )
-  params <- hector::fetchvars(core, NA, param_names)
-  new_params <- params %>%
-    dplyr::mutate(variable = gsub("global", biome_name, variable)) %>%
-    dplyr::bind_rows(params)
-  new_values <- dplyr::bind_rows(orig_biome, new_biome, new_params)
-  set_values <- new_values %>%
-    dplyr::select(dates = year, var = variable, value, unit = units) %>%
-    purrr::pwalk(hector::setvar, core = core)
-  invisible(hector::reset(core))
-  new_values
-}
-
-if (FALSE) {
-
-  ini <- system.file("input", "hector_rcp45.ini", package = "hector")
-  core <- hector::newcore(ini, suppresslogging = FALSE)
-  biome_name <- "boreal"
-  frac_veg <- 0.5
-  frac_soil <- frac_veg
-  frac_detritus <- frac_soil
-  frac_npp_flux0 <- frac_veg
-  v <- split_biome(core, biome_name)
-  ## hector::run(core)
-
+  params <- ini[["simpleNbox"]][gsub("global\\.", "", param_names)] %>%
+    setNames(param_names)
+  if (is.null(params[["global.warmingfactor"]])) {
+    params[["global.warmingfactor"]] <- 1
+  }
+  new_params <- setNames(params, gsub("global", biome_name, param_names))
+  remove_values <- rep(list(NULL), length(param_names) + nrow(frac_tbl)) %>%
+    setNames(gsub("global\\.", "", c(param_names, frac_tbl[["variable"]])))
+  new_values <- list(simpleNbox = c(
+    as.list(tibble::deframe(orig_biome)),
+    as.list(tibble::deframe(new_biome)),
+    params, new_params, remove_values
+  ))
+  new_ini <- modifyList(ini, new_values)
+  hectortools::newcore_ini(new_ini)
 }

@@ -40,13 +40,13 @@ described by \href{https://doi.org/10.1890/12-0137.1}{LeBauer et al. (2013)}, bu
 differences:
 \itemize{
 \item LeBauer et al. use a cubic spline interpolation through each
-point in the model output. This function uses local polynomial
-regression (\code{\link[stats:loess]{stats::loess()}}).
+point in the model output. This function uses a generalized
+additive model regression (\code{\link[mgcv:gam]{mgcv::gam()}}).
 \item LeBauer et al. fit individual splines to each parameter-output
 combination where other parameters are held constant at their
-median. This function fits a multivariate local polynomial
-regression (either additive or interactive, based on the \code{.type}
-argument), and then uses that fit to calculate the partial derivatives.
+median. This function fits a multivariate generalized additive
+regression model, and then uses that fit to calculate the partial
+derivatives.
 }
 }
 \author{

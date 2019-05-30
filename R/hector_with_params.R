@@ -3,27 +3,31 @@
 #' To specify units, set the `unit` attribute of the parameter. 
 #'
 #' @param ... Named list of parameter values (e.g. `beta = 0.3`).
-#'   Names must match Hector parameter names. 
+#'   Names must match Hector parameter names.
 #' @param .dots A named list of arguments. Provides an alternative
 #'   specification to `...`
-#' @param rcp
-#' @return 
+#' @param rcp Representative carbon pathway (RCP) to use. One of
+#'   `"26"`, `"45"`, `"60"`, `"85"`
+#' @param core (Optional) An existing Hector core to modify.
+#' @return Hector output, as a `data.frame`
 #' @author Alexey Shiklomanov
 #' @examples
-#' hector_with_params(beta = 0.5, q10_rh = )
+#' hector_with_params(beta = 0.5, q10_rh = 1.8)
 #' @export
-hector_with_params <- function(..., .dots = list(), rcp = "45") {
+hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
   params <- modifyList(.dots, list(...))
-  ini_file <- system.file(
-    "input",
-    paste0("hector_rcp", rcp, ".ini"),
-    package = "hector"
-  )
-  core <- hector::newcore(
-    ini_file,
-    name = "sensitivity",
-    suppresslogging = TRUE
-  )
+  if (is.null(core)) {
+    ini_file <- system.file(
+      "input",
+      paste0("hector_rcp", rcp, ".ini"),
+      package = "hector"
+    )
+    core <- hector::newcore(
+      ini_file,
+      name = "sensitivity",
+      suppresslogging = TRUE
+    )
+  }
   purrr::iwalk(
     params,
     ~hector::setvar(core, NA, .y, .x, NA)
