@@ -2,3 +2,8 @@ paper.html
 paper.pdf
 paper.log
 paper.tex
+paper.md
+
+paper_files
+
+_deploy/
