@@ -8,7 +8,8 @@ hector_with_params(..., .dots = list(), rcp = "45", core = NULL)
 }
 \arguments{
 \item{...}{Named list of parameter values (e.g. \code{beta = 0.3}).
-Names must match Hector parameter names.}
+Names must match Hector parameter names, or arguments to
+\code{\link[=split_biome]{split_biome()}}.}
 
 \item{.dots}{A named list of arguments. Provides an alternative
 specification to \code{...}}
@@ -26,6 +27,12 @@ To specify units, set the \code{unit} attribute of the parameter.
 }
 \examples{
 hector_with_params(beta = 0.5, q10_rh = 1.8)
+hector_with_params(
+  global.beta = 0.6,
+  permafrost.beta = 0.8,
+  biome_name = "permafrost",
+  frac_veg = 0.2
+)
 }
 \author{
 Alexey Shiklomanov

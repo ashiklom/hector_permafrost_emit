@@ -64,5 +64,5 @@ split_biome <- function(biome_name,
     params, new_params, remove_values
   ))
   new_ini <- modifyList(ini, new_values)
-  hectortools::newcore_ini(new_ini)
+  hectortools::newcore_ini(new_ini, name = "split_biome")
 }

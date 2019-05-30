@@ -3,7 +3,8 @@
 #' To specify units, set the `unit` attribute of the parameter. 
 #'
 #' @param ... Named list of parameter values (e.g. `beta = 0.3`).
-#'   Names must match Hector parameter names.
+#'   Names must match Hector parameter names, or arguments to
+#'   [split_biome()].
 #' @param .dots A named list of arguments. Provides an alternative
 #'   specification to `...`
 #' @param rcp Representative carbon pathway (RCP) to use. One of
@@ -13,21 +14,38 @@
 #' @author Alexey Shiklomanov
 #' @examples
 #' hector_with_params(beta = 0.5, q10_rh = 1.8)
+#' hector_with_params(
+#'   global.beta = 0.6,
+#'   permafrost.beta = 0.8,
+#'   biome_name = "permafrost",
+#'   frac_veg = 0.2
+#' )
 #' @export
 hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
-  params <- modifyList(.dots, list(...))
+  raw_params <- modifyList(.dots, list(...))
+  all_names <- names(raw_params)
+  sb_names_all <- names(formals(split_biome))
+  sb_names <- intersect(all_names, sb_names_all)
   if (is.null(core)) {
     ini_file <- system.file(
       "input",
       paste0("hector_rcp", rcp, ".ini"),
       package = "hector"
     )
-    core <- hector::newcore(
-      ini_file,
-      name = "sensitivity",
-      suppresslogging = TRUE
-    )
+    if (length(sb_names) > 0) {
+      sb_params <- raw_params[sb_names]
+      if (is.null(sb_params[["biome_name"]])) biome_name <- "permafrost"
+      core <- do.call(split_biome, sb_params)
+    } else {
+      core <- hector::newcore(
+        ini_file,
+        name = "sensitivity",
+        suppresslogging = TRUE
+      )
+    }
   }
+  param_names <- setdiff(all_names, sb_names_all)
+  params <- raw_params[param_names]
   purrr::iwalk(
     params,
     ~hector::setvar(core, NA, .y, .x, NA)
