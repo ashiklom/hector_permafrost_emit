@@ -196,13 +196,44 @@ According to [@hartin_2015_simple], these were selected to be "generally consist
 
 ```{r fig-parameter-distribution, fig.cap = param_dist_cap}
 param_dist_cap <- paste(
-  "Input parameter distributions."
+  "Input parameter distributions for global Hector."
 )
 readd(draws_plot)
 ```
 
 
 # Results
+
+## Global Hector
+
+```{r fig-global-timeseries, fig.cap = global_ts_cap, fig.dim = c(10, 8)}
+global_ts_cap <- paste(
+  "Time series of Hector outputs for different parameter combinations."
+)
+readd(ts_both)
+```
+
+```{r fig-global-scatter, fig.cap = global_scatter_cap, fig.dim = c(8, 5)}
+global_scatter_cap <- paste(
+  "Hector outputs at 2100 as a function of input parameter values."
+)
+readd(scatter_both)
+```
+
+```{r fig-global-sensitivity, fig.cap = global_sensitivity_cap, fig.dim = c(5, 5)}
+global_sensitivity_cap <- paste(
+  "Sensitivity and variance decomposition analysis for global Hector."
+)
+readd(sensitivity_plot)
+```
+
+## Permafrost as a biome
+
+**Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
+
+**Figure**: PEcAn-like variance decomposition of parameters (for each parameter: sensitivity, uncertainty, and partial variance)
+
+## Permafrost methane emissions
 
 **Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
 
