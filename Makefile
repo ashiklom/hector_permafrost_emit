@@ -1,6 +1,6 @@
 .PHONY: all drake deploy
 
-all: drake deploy
+all: drake
 
 drake: analysis/data/derived_data/parameter-draws.csv
 	./analysis/drake.R
