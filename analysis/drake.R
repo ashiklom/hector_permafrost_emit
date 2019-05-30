@@ -7,6 +7,7 @@ library(readr)
 library(parallel, include.only = "detectCores")
 library(cowplot)
 library(future)
+library(here)
 
 requireNamespace("ggpairs", quietly = TRUE)
 
@@ -22,6 +23,9 @@ if (!("--all" %in% commandArgs(trailingOnly = TRUE))) {
 params <- rlang::syms(colnames(draws))
 
 plan <- drake_plan(
+  paper_file = knitr_in(!!here("analysis", "paper", "paper.Rmd")),
+  paper_md = rmarkdown::render(paper_file, "github_document"),
+  paper_pdf = rmarkdown::render(paper_file, "pdf_document"),
   draws_plot = GGally::ggpairs(draws),
   sims = target(
     hector_with_params(

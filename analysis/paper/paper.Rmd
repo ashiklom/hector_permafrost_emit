@@ -119,7 +119,7 @@ $$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
 
 This is case 1.
 
-Case 2 uses the same formulation, but splits permafrost C into its own "biome", with its own photosynthesis ($\Beta$) and respiration ($Q_{10}$) parameters.
+Case 2 uses the same formulation, but splits permafrost C into its own "biome", with its own photosynthesis ($\beta$) and respiration ($Q_{10}$) parameters.
 
 Case 3 extends Case 2 by calculating CO~2~ and CH~4~ emissions as a fraction of the total respiration, controlled by two new parameters $\alpha$ and $\phi$:
 
@@ -137,13 +137,13 @@ The outputs of these calibrations are joint posterior distributions of parameter
 
 For global parameters, we used the following likelihood:
 
-$$ \log(L) = \sum_s Normal(Hector(\Beta, Q_{10}, s) | CMIP5(s), \sigma) $$
+$$ \log(L) = \sum_s Normal(Hector(\beta, Q_{10}, s) | CMIP5(s), \sigma) $$
 
 where $s$ is one of the four representative carbon pathways (RCPs), $CMIP5(s)$ are the CMIP5 global mean outputs for the corresponding variables, and $\sigma$ is the model error (estimated during the fit).
-We also used the resulting distributions for $\Beta$ and $Q_{10}$ for the non-permafrost biome in cases 2 and 3.
+We also used the resulting distributions for $\beta$ and $Q_{10}$ for the non-permafrost biome in cases 2 and 3.
 We feel this is appropriate because the CMIP5 models against which these parameters are calibrated do not include permafrost C feedbacks.
 
-For case 2, we calibrated the permafrost-specific $\Beta$ and $Q_{10}$ against various literature sources, including:
+For case 2, we calibrated the permafrost-specific $\beta$ and $Q_{10}$ against various literature sources, including:
 
 - Land surface model simulations [@hope_2015_economic; @schaefer_2011_amount; @burke_2017_quantifying].
     - Try to calibrate against NPP and soil respiration if possible
@@ -172,7 +172,7 @@ For cases 2 and 3, we assumed the same total pool sizes as case 1, but divided t
 
 Frozen carbon residence time (FCRt) from [@burke_2017_quantifying]:
 
-$$ FCRt = FCRt0 * exp(-ΔT / Γ) (for ΔT > 0.2 °C) $$
+$$ FCRt = FCRt0 * exp(-\Delta T / \Gamma) (for \Delta T > 0.2 °C) $$
 
 - $FCRt_0$ (years) reflects the stability of permafrost C (length of time that permafrost C is stable when $\Delta T = 0$)
 - $\Gamma$ -- decay term (°C); temperature change at which "the number of years taken for all of the old permafrost C to be emitted reduces to 1/e of its initial value"
@@ -193,19 +193,19 @@ Other Hector parameters to consider.
 
 According to [@hartin_2015_simple], these were selected to be "generally consistent with previous simple earth system models [e.g., @meinshausen_2011_emulating]".
 
+```{r fig-parameter-distribution, fig.cap = param_dist_cap}
+param_dist_cap <- paste(
+  "Input parameter distributions."
+)
+readd(draws_plot)
+```
+
 
 # Results
-
-**Figure**: Parameter distributions from calibration.
 
 **Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
 
 **Figure**: PEcAn-like variance decomposition of parameters (for each parameter: sensitivity, uncertainty, and partial variance)
-
-```{r get-data, eval = FALSE}
-# Note the path that we need to use to access our data files when rendering this document
-my_data <- readr::read_csv("../data/raw_data/my_csv_file.csv")
-```
 
 # Discussion
 
