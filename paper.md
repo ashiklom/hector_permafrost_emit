@@ -602,7 +602,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-05-30 10:42:00 using the following
+This report was generated on 2019-05-30 11:19:37 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -703,4 +703,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [a056d43] 2019-05-30: Render manuscript (and fix some LaTeX issues)
+    #> Head:     [46d637f] 2019-05-30: Set up paper deployment on gh-pages
