@@ -9,18 +9,16 @@ library(cowplot)
 library(future)
 library(here)
 
-requireNamespace("ggpairs", quietly = TRUE)
+stopifnot(
+  requireNamespace("GGally", quietly = TRUE),
+  requireNamespace("devtools", quietly = TRUE)
+)
 
 devtools::load_all(".")
 expose_imports("hector.permafrost.emit")
 
 # To make this reproducible
-draws <- read_csv(file.path("analysis", "data",
-                            "derived_data", "parameter-draws.csv"))
-if (!("--all" %in% commandArgs(trailingOnly = TRUE))) {
-  draws <- head(draws, 100)
-}
-params <- rlang::syms(colnames(draws))
+run_all <- "--all" %in% commandArgs(trailingOnly = TRUE)
 
 paper_file <- here("analysis", "paper", "paper.Rmd")
 
