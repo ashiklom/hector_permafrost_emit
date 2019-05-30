@@ -209,10 +209,31 @@ According to (Hartin et al., 2015), these were selected to be “generally
 consistent with previous simple earth system models (e.g., Meinshausen
 et al., 2011)”.
 
-![Input parameter
-distributions.](paper_files/figure-gfm/fig-parameter-distribution-1.png)
+![Input parameter distributions for global
+Hector.](paper_files/figure-gfm/fig-parameter-distribution-1.png)
 
 # Results
+
+## Global Hector
+
+![Time series of Hector outputs for different parameter
+combinations.](paper_files/figure-gfm/fig-global-timeseries-1.png)
+
+![Hector outputs at 2100 as a function of input parameter
+values.](paper_files/figure-gfm/fig-global-scatter-1.png)
+
+![Sensitivity and variance decomposition analysis for global
+Hector.](paper_files/figure-gfm/fig-global-sensitivity-1.png)
+
+## Permafrost as a biome
+
+**Figure**: Hector projections of parameter sensitivity (CI ribbon, or
+light/transparent lines), colored (faceted?) by case.
+
+**Figure**: PEcAn-like variance decomposition of parameters (for each
+parameter: sensitivity, uncertainty, and partial variance)
+
+## Permafrost methane emissions
 
 **Figure**: Hector projections of parameter sensitivity (CI ribbon, or
 light/transparent lines), colored (faceted?) by case.
@@ -602,7 +623,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-05-30 11:19:37 using the following
+This report was generated on 2019-05-30 11:45:57 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -703,4 +724,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [46d637f] 2019-05-30: Set up paper deployment on gh-pages
+    #> Head:     [2209bc6] 2019-05-30: Don't deploy in `make all`
