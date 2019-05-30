@@ -1,39 +1,22 @@
 #!/usr/bin/env Rscript
-library(drake)
-library(ggplot2)
+library(drake, exclude = c("expand", "gather", "plan"))
+library(ggplot2, exclude = "ggsave")
+library(dplyr)
+library(tidyr)
+library(readr)
+library(parallel, include.only = "detectCores")
+library(cowplot)
+library(future)
 
-requireNamespace("future", quietly = TRUE)
-
-# begin imports
-import::from("tibble", "tibble", "as_tibble", .into = "")
-import::from("dplyr", "bind_rows", "bind_cols", "filter", "group_by",
-             "summarize", "mutate", "ungroup", .into = "")
-import::from("cowplot", "plot_grid", "theme_cowplot", "save_plot",
-             .into = "")
-import::from("parallel", "detectCores", .into = "")
-import::from("magrittr", "%>%", .into = "")
-import::from("tidyr", "gather", .into = "")
-# end imports
+requireNamespace("ggpairs", quietly = TRUE)
 
 devtools::load_all(".")
 expose_imports("hector.permafrost.emit")
 
 # To make this reproducible
-set.seed(8675309)
-ndraws <- 500
-beta_draws <- runif(ndraws, 0, 1)
-q10_draws <- runif(ndraws, 0, 10)
-
-npp_alpha <- c(f_nppv = 0.35, f_nppd = 0.60, f_npps = 0.05)
-npp_draws <- rdirichlet(ndraws, npp_alpha)[, 1:2]
-
-draws <- tibble(
-  beta = runif(ndraws, 0, 1),
-  q10_rh = runif(ndraws, 0, 10),
-  f_litterd = rbeta(ndraws, 0.98 * 4, 0.02 * 4)
-) %>%
-  bind_cols(as_tibble(npp_draws))
-
+draws <- read_csv(file.path("analysis", "data",
+                            "derived_data", "parameter-draws.csv"))
+draws <- head(draws, 100)
 params <- rlang::syms(colnames(draws))
 
 plan <- drake_plan(
@@ -117,12 +100,10 @@ plan <- drake_plan(
   )
 )
 
-is_callr <- Sys.getenv("CALLR") == "true"
-
 dconf <- drake_config(
   plan,
   parallelism = "future",
-  jobs = 1,
+  jobs = parallel::detectCores(),
   prework = quote({
     devtools::load_all(".", quiet = TRUE)
   })
@@ -132,15 +113,13 @@ dconf <- drake_config(
 dout <- outdated(dconf)
 if (length(dout) > 10) {
   dconf[["jobs"]] <- parallel::detectCores()
-  message("More than 10 outdated targets. ",
+  message("Number of outdated targets (", length(dout), ") ",
+          "is greater than 10.",
           "Running in parallel across ", dconf[["jobs"]], " cores.")
 }
 
 if (interactive()) {
-  r_make(here::here("analysis", "drake.R"),
-         r_args = list(env = c(callr::rcmd_safe_env(), "CALLR" = "true")))
-} else if (is_callr) {
-  dconf
+  callr::rscript(here::here("analysis", "drake.R"))
 } else {
   make(config = dconf)
 }
