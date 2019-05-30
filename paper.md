@@ -623,7 +623,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-05-30 11:45:57 using the following
+This report was generated on 2019-05-30 12:10:16 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -724,4 +724,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [2209bc6] 2019-05-30: Don't deploy in `make all`
+    #> Head:     [898e701] 2019-05-30: Merge branch 'master' of github.com:ashiklom/hector_permafrost_emit
