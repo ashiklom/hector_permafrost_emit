@@ -48,7 +48,7 @@ sensitivity_analysis <- function(df, ..., .type = "additive") {
   params_q <- rlang::enquos(...)
   params_s <- purrr::map_chr(params_q, rlang::quo_name)
   pqs <- purrr::map(params_q, pq) %>% purrr::reduce(c)
-  rhs <- paste(params_s, collapse = .collapse)
+  rhs <- paste(sprintf("s(%s)", params_s), collapse = .collapse)
   form <- paste0("value ~ ", rhs)
   pred_qs <- purrr::map(seq_along(params_q), pred_q, x = params_q) %>%
     purrr::reduce(c)

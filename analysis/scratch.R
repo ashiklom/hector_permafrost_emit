@@ -143,3 +143,23 @@ pred_df <- lastyear %>% dplyr::select(q10_rh:f_litterd, -dplyr::starts_with("f_l
   modifyList(list(beta = c(0.03, 0.04))) %>%
   tibble::as_tibble()
 pred <- predict(fit, pred_df)
+
+###############################################
+# Sensitivity analysis using Gaussian Process #
+###############################################
+library(drake)
+library(tidyverse)
+dat <- readd(lastyear) %>%
+  filter(variable == "Tgav")
+means <- dat %>% summarize_at(vars(beta:f_litterd), mean)
+
+dat_in <- dat %>% select(beta:f_litterd) %>% as.matrix()
+fitgp <- mlegp::mlegp(dat_in, dat$value)
+pd <- as_tibble(modifyList(as.list(means), list(beta = seq(0.1, 1, 0.1))))
+y <- predict(fitgp, pd, se.fit = TRUE)
+## plot(pd$beta, y$fit, xlim = range(dat$beta, pd$beta))
+
+plot(pd$beta, y$fit, ylim = range(y$fit + c(1, -1) * y$se.fit))
+## points(dat$beta, dat$value, col = "red")
+lines(pd$beta, y$fit + y$se.fit, lty = "dashed")
+lines(pd$beta, y$fit - y$se.fit, lty = "dashed")
