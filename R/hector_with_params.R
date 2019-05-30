@@ -35,7 +35,15 @@ hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
     if (length(sb_names) > 0) {
       sb_params <- raw_params[sb_names]
       if (is.null(sb_params[["biome_name"]])) biome_name <- "permafrost"
-      core <- do.call(split_biome, sb_params)
+      core <- tryCatch(
+        do.call(split_biome, sb_params),
+        error = function(e) {
+          message("Hit the following error while creating core:\n",
+                  conditionMessage(e), ".\n",
+                  "Returning `NULL`.")
+          return(NULL)
+        })
+      if (is.null(core)) return(NULL)
     } else {
       core <- hector::newcore(
         ini_file,
@@ -46,16 +54,26 @@ hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
   }
   param_names <- setdiff(all_names, sb_names_all)
   params <- raw_params[param_names]
-  purrr::iwalk(
-    params,
-    ~hector::setvar(core, NA, .y, .x, NA)
-  )
+  .iout <- tryCatch({
+    purrr::iwalk(
+      params,
+      ~hector::setvar(core, NA, .y, .x, NA)
+    )
+  }, error = function(e) {
+    message("Failed to set parameter value. ",
+            "Probably hit this error during `reset`. ",
+            "Returning `NULL`.")
+    return(NULL)
+  })
+  if (is.null(.iout)) return(NULL)
   tryCatch({
     hector::run(core)
     hector::fetchvars(core, 2000:2100) %>%
       dplyr::mutate(!!!params)
   }, error = function(e) {
-    message("Run failed. Returning NULL.")
+    message("Run failed. Returning `NULL`.\n",
+            "Hit the following error:\n",
+            conditionMessage(e))
     return(NULL)
   })
 }
