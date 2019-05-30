@@ -27,6 +27,7 @@ paper_file <- here("analysis", "paper", "paper.Rmd")
 plan <- drake_plan(
   paper_md = rmarkdown::render(knitr_in(!!paper_file), "github_document"),
   paper_pdf = rmarkdown::render(knitr_in(!!paper_file), "pdf_document"),
+  paper_html = rmarkdown::render(knitr_in(!!paper_file), "html_document"),
   draws_plot = GGally::ggpairs(draws),
   sims = target(
     hector_with_params(

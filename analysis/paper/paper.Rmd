@@ -11,6 +11,8 @@ output:
     bookdown::html_document2:
       fig_caption: yes
       reference_docx: "../templates/template.docx"
+    rmarkdown::github_document:
+      html_preview: false
 bibliography: ["references.bib", "packages.bib"]
 csl: "../templates/biogeosciences.csl"
 abstract: |
