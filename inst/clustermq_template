@@ -1,0 +1,25 @@
+#!/bin/sh
+# These are required
+#SBATCH --account br19_shik544
+#SBATCH --time 01-00:00
+#SBATCH --nodes 1
+
+# #SBATCH --nodes 1-512
+
+# These are from the drake template
+#SBATCH --job-name={{ job_name }}
+#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index
+#SBATCH --error={{ log_file | /dev/null }}
+#SBATCH --array=1-{{ n_jobs }}
+
+# Setting these breaks the configuration
+# #SBATCH --partition=default
+# #SBATCH --mem-per-cpu={{ memory | 4096 }}
+
+# Load my custom modules
+while read mod; do
+      module load "$mod"
+done < /people/shik544/.modules
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

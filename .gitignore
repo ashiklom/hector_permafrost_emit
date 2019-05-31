@@ -8,3 +8,6 @@ logs/
 
 # GCAM output (huge!)
 gcam-output/
+
+# Saved simulation outputs
+analysis/data/output/

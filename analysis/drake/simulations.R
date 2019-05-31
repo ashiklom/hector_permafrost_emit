@@ -13,5 +13,6 @@ plan <- bind_plans(plan, drake_plan(
   all_sims = target(
     as_tibble(bind_rows(sims, .id = "id")),
     transform = combine(sims)
-  )
+  ),
+  all_sims_out = write_csv(all_sims, file_out("analysis/data/output/s1_sims.csv"))
 ))

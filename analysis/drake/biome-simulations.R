@@ -25,5 +25,6 @@ plan <- bind_plans(plan, drake_plan(
   biome_all_sims = target(
     as_tibble(bind_rows(biome_sims, .id = "id")),
     transform = combine(biome_sims)
-  )
+  ),
+  biome_sims_out = write_csv(biome_all_sims, file_out("analysis/data/output/biome-sims.csv"))
 ))
