@@ -1,7 +1,7 @@
 Hector Permafrost
 ================
 Alexey N. Shiklomanov
-30 May, 2019
+31 May, 2019
 
 # Introduction
 
@@ -623,7 +623,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-05-30 12:10:16 using the following
+This report was generated on 2019-05-31 08:35:37 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -636,7 +636,7 @@ computational environment and dependencies:
     #>  collate  en_US.UTF-8                 
     #>  ctype    en_US.UTF-8                 
     #>  tz       America/New_York            
-    #>  date     2019-05-30                  
+    #>  date     2019-05-31                  
     #> 
     #> ─ Packages ──────────────────────────────────────────────────────────────
     #>  ! package                * version    date       lib source        
@@ -665,6 +665,7 @@ computational environment and dependencies:
     #>    gtable                   0.3.0      2019-03-25 [1] CRAN (R 3.6.0)
     #>    hector                   2.2.0      2019-05-29 [1] local         
     #>  P hector.permafrost.emit * 0.0.0.9000 2019-05-30 [?] local         
+    #>    hectortools              0.0.0.9000 2019-01-25 [1] local         
     #>    here                   * 0.1        2017-05-28 [1] CRAN (R 3.6.0)
     #>    highr                    0.8        2019-03-20 [1] CRAN (R 3.6.0)
     #>    hms                      0.4.2      2018-03-10 [1] CRAN (R 3.6.0)
@@ -724,4 +725,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [898e701] 2019-05-30: Merge branch 'master' of github.com:ashiklom/hector_permafrost_emit
+    #> Head:     [aae953d] 2019-05-30: Add biome simulations to drake
