@@ -21,7 +21,8 @@ draws <- tibble(
   permafrost.f_litterd = rbeta(ndraws, 0.98 * 4, 0.02 * 4),
   frac_veg = rbeta(ndraws, 1, 2),
   frac_soil = rbeta(ndraws, 1.1, 1.1),
-  frac_detritus = rbeta(ndraws, 1.1, 1.1)
+  frac_detritus = rbeta(ndraws, 1.1, 1.1),
+  warmingfactor = 1 + 3 * rbeta(ndraws, 5, 5)
 ) %>%
   bind_cols(as_tibble(gl_npp_draws), as_tibble(pf_npp_draws))
 

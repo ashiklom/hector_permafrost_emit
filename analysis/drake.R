@@ -45,7 +45,7 @@ if (interactive()) {
   if (length(dout) > 10) {
     dconf[["jobs"]] <- parallel::detectCores()
     message("Number of outdated targets (", length(dout), ") ",
-            "is greater than 10.",
+            "is greater than 10. ",
             "Running in parallel across ", dconf[["jobs"]], " cores.")
   }
 
