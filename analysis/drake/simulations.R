@@ -1,3 +1,14 @@
+plan <- bind_plans(plan, drake_plan(
+  global_sims = file_in(!!here("analysis", "data",
+                            "output", "global-sims.fst")) %>%
+    fst::read_fst() %>%
+    as_tibble(),
+  biome_sims = file_in(!!here::here("analysis", "data",
+                                        "output", "biome-sims.fst")) %>%
+    fst::read_fst() %>%
+    as_tibble()
+))
+
 ## plan <- bind_plans(plan, drake_plan(
 ##   draws_plot = GGally::ggpairs(draws),
 ##   sims = target(

@@ -163,3 +163,6 @@ plot(pd$beta, y$fit, ylim = range(y$fit + c(1, -1) * y$se.fit))
 ## points(dat$beta, dat$value, col = "red")
 lines(pd$beta, y$fit + y$se.fit, lty = "dashed")
 lines(pd$beta, y$fit - y$se.fit, lty = "dashed")
+
+plan %>% pull(target)
+readd(sensitivity_plot_sensitivity_lastyear_)

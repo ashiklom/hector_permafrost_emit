@@ -210,28 +210,45 @@ readd(draws_plot)
 global_ts_cap <- paste(
   "Time series of Hector outputs for different parameter combinations."
 )
-readd(ts_both)
+readd(ts_global_sims)
 ```
 
 ```{r fig-global-scatter, fig.cap = global_scatter_cap, fig.dim = c(8, 5)}
 global_scatter_cap <- paste(
   "Hector outputs at 2100 as a function of input parameter values."
 )
-readd(scatter_both)
+readd(scatter_lastyear_global_sims)
 ```
 
 ```{r fig-global-sensitivity, fig.cap = global_sensitivity_cap, fig.dim = c(5, 5)}
 global_sensitivity_cap <- paste(
   "Sensitivity and variance decomposition analysis for global Hector."
 )
-readd(sensitivity_plot)
+readd(sensitivity_plot_sensitivity_global_params_lastyear_global_sims)
 ```
 
 ## Permafrost as a biome
 
-**Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
+```{r fig-biome-timeseries, fig.cap = biome_ts_cap, fig.dim = c(10, 8)}
+biome_ts_cap <- paste(
+  "Overall parameter uncertainty of Hector simulations with permafrost biome."
+)
+readd(ts_biome_sims)
+```
 
-**Figure**: PEcAn-like variance decomposition of parameters (for each parameter: sensitivity, uncertainty, and partial variance)
+```{r fig-biome-scatter, fig.cap = biome_scatter_cap, fig.dim = c(8, 8)}
+biome_scatter_cap <- paste(
+  "Hector outputs (with permafrost biome) at 2100 as a function of input parameter values."
+)
+readd(scatter_lastyear_biome_sims)
+```
+
+```{r fig-biome-sensitivity, fig.cap = biome_sensitivity_cap, fig.dim = c(5, 7)}
+biome_sensitivity_cap <- paste(
+  "Sensitivity and variance decomposition analysis for Hector with permafrost biome."
+)
+readd(sensitivity_plot_sensitivity_biome_params_lastyear_biome_sims)
+```
 
 ## Permafrost methane emissions
 
