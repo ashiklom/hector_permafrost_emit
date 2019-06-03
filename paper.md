@@ -209,11 +209,12 @@ According to (Hartin et al., 2015), these were selected to be “generally
 consistent with previous simple earth system models (e.g., Meinshausen
 et al., 2011)”.
 
-    #> [1] NA
-
 # Results
 
 ## Global Hector
+
+![Input parameter distributions for global
+Hector.](paper_files/figure-gfm/fig-global-dist-1.png)
 
 ![Time series of Hector outputs for different parameter
 combinations.](paper_files/figure-gfm/fig-global-timeseries-1.png)
@@ -225,6 +226,9 @@ values.](paper_files/figure-gfm/fig-global-scatter-1.png)
 Hector.](paper_files/figure-gfm/fig-global-sensitivity-1.png)
 
 ## Permafrost as a biome
+
+![Input parameter distributions for global
+Hector.](paper_files/figure-gfm/fig-biome-dist-1.png)
 
 ![Overall parameter uncertainty of Hector simulations with permafrost
 biome.](paper_files/figure-gfm/fig-biome-timeseries-1.png)
@@ -625,7 +629,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-06-03 16:05:23 using the following
+This report was generated on 2019-06-03 16:25:49 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -671,6 +675,7 @@ computational environment and dependencies:
     #>  P hector.permafrost.emit * 0.0.0.9000 2019-05-30 [?] local         
     #>    hectortools              0.0.0.9000 2019-01-25 [1] local         
     #>    here                   * 0.1        2017-05-28 [1] CRAN (R 3.6.0)
+    #>    hexbin                 * 1.27.3     2019-05-14 [1] CRAN (R 3.6.0)
     #>    highr                    0.8        2019-03-20 [1] CRAN (R 3.6.0)
     #>    hms                      0.4.2      2018-03-10 [1] CRAN (R 3.6.0)
     #>    htmltools                0.3.6      2017-04-28 [1] CRAN (R 3.6.0)
@@ -728,4 +733,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [eb675c5] 2019-06-03: Submit Hector runs separate from workflow
+    #> Head:     [da8d741] 2019-06-03: Add biome simulation figures
