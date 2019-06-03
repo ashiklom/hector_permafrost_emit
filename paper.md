@@ -1,7 +1,7 @@
 Hector Permafrost
 ================
 Alexey N. Shiklomanov
-31 May, 2019
+03 June, 2019
 
 # Introduction
 
@@ -209,8 +209,7 @@ According to (Hartin et al., 2015), these were selected to be “generally
 consistent with previous simple earth system models (e.g., Meinshausen
 et al., 2011)”.
 
-![Input parameter distributions for global
-Hector.](paper_files/figure-gfm/fig-parameter-distribution-1.png)
+    #> [1] NA
 
 # Results
 
@@ -227,11 +226,14 @@ Hector.](paper_files/figure-gfm/fig-global-sensitivity-1.png)
 
 ## Permafrost as a biome
 
-**Figure**: Hector projections of parameter sensitivity (CI ribbon, or
-light/transparent lines), colored (faceted?) by case.
+![Overall parameter uncertainty of Hector simulations with permafrost
+biome.](paper_files/figure-gfm/fig-biome-timeseries-1.png)
 
-**Figure**: PEcAn-like variance decomposition of parameters (for each
-parameter: sensitivity, uncertainty, and partial variance)
+![Hector outputs (with permafrost biome) at 2100 as a function of input
+parameter values.](paper_files/figure-gfm/fig-biome-scatter-1.png)
+
+![Sensitivity and variance decomposition analysis for Hector with
+permafrost biome.](paper_files/figure-gfm/fig-biome-sensitivity-1.png)
 
 ## Permafrost methane emissions
 
@@ -623,7 +625,7 @@ doi:[10.1126/science.1128908](https://doi.org/10.1126/science.1128908),
 
 ### Colophon
 
-This report was generated on 2019-05-31 08:35:37 using the following
+This report was generated on 2019-06-03 16:05:23 using the following
 computational environment and dependencies:
 
     #> ─ Session info ──────────────────────────────────────────────────────────
@@ -636,7 +638,7 @@ computational environment and dependencies:
     #>  collate  en_US.UTF-8                 
     #>  ctype    en_US.UTF-8                 
     #>  tz       America/New_York            
-    #>  date     2019-05-31                  
+    #>  date     2019-06-03                  
     #> 
     #> ─ Packages ──────────────────────────────────────────────────────────────
     #>  ! package                * version    date       lib source        
@@ -650,6 +652,7 @@ computational environment and dependencies:
     #>    colorspace               1.4-1      2019-03-18 [1] CRAN (R 3.6.0)
     #>    cowplot                * 0.9.4      2019-01-08 [1] CRAN (R 3.6.0)
     #>    crayon                   1.3.4      2017-09-16 [1] CRAN (R 3.6.0)
+    #>    data.table               1.12.2     2019-04-07 [1] CRAN (R 3.6.0)
     #>    desc                     1.2.0      2018-05-01 [1] CRAN (R 3.6.0)
     #>    devtools                 2.0.2      2019-04-08 [1] CRAN (R 3.6.0)
     #>    digest                   0.6.19     2019-05-20 [1] CRAN (R 3.6.0)
@@ -657,6 +660,7 @@ computational environment and dependencies:
     #>    drake                  * 7.3.0      2019-05-19 [1] CRAN (R 3.6.0)
     #>    evaluate                 0.14       2019-05-28 [1] CRAN (R 3.6.0)
     #>    fs                       1.3.1      2019-05-06 [1] CRAN (R 3.6.0)
+    #>    fst                      0.9.0      2019-04-09 [1] CRAN (R 3.6.0)
     #>    future                 * 1.13.0     2019-05-08 [1] CRAN (R 3.6.0)
     #>    GGally                   1.4.0      2018-05-17 [1] CRAN (R 3.6.0)
     #>    ggplot2                * 3.1.1      2019-04-07 [1] CRAN (R 3.6.0)
@@ -701,13 +705,12 @@ computational environment and dependencies:
     #>    rlang                    0.3.4      2019-04-07 [1] CRAN (R 3.6.0)
     #>    rmarkdown                1.13       2019-05-22 [1] CRAN (R 3.6.0)
     #>    rprojroot                1.3-2      2018-01-03 [1] CRAN (R 3.6.0)
-    #>    rstudioapi               0.10       2019-03-19 [1] CRAN (R 3.6.0)
     #>    scales                   1.0.0      2018-08-09 [1] CRAN (R 3.6.0)
     #>    sessioninfo              1.1.1      2018-11-05 [1] CRAN (R 3.6.0)
     #>    storr                    1.2.1      2018-10-18 [1] CRAN (R 3.6.0)
     #>    stringi                  1.4.3      2019-03-12 [1] CRAN (R 3.6.0)
     #>    stringr                  1.4.0      2019-02-10 [1] CRAN (R 3.6.0)
-    #>    testthat               * 2.1.1      2019-04-23 [1] CRAN (R 3.6.0)
+    #>    testthat                 2.1.1      2019-04-23 [1] CRAN (R 3.6.0)
     #>    tibble                   2.1.1      2019-03-16 [1] CRAN (R 3.6.0)
     #>    tidyr                  * 0.8.3      2019-03-01 [1] CRAN (R 3.6.0)
     #>    tidyselect               0.2.5      2018-10-11 [1] CRAN (R 3.6.0)
@@ -725,4 +728,4 @@ computational environment and dependencies:
 The current Git commit details are:
 
     #> Local:    master /Users/shik544/Box Sync/Projects/hector_project/permafrost_emit
-    #> Head:     [aae953d] 2019-05-30: Add biome simulations to drake
+    #> Head:     [eb675c5] 2019-06-03: Submit Hector runs separate from workflow
