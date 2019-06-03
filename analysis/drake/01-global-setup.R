@@ -19,10 +19,3 @@ biomes_params <- bind_rows(
   tibble(model = list(rlang::sym("global_sims")), params = global_params),
   tibble(model = list(rlang::sym("biome_sims")), params = biome_params)
 )
-
-## draws <- read_csv(file.path("analysis", "data",
-##                             "derived_data", "parameter-draws.csv"))
-## if (!run_all) {
-##   draws <- head(draws, 100)
-## }
-## params <- rlang::syms(colnames(draws))
