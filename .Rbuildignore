@@ -1,0 +1,4 @@
+^\.drake/
+^analysis/
+\.log$
+^logs/

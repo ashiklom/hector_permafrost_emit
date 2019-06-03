@@ -1,9 +1,15 @@
-.drake
+# Drake cache
+\.drake
 
 # Figures are derived from code
 analysis/figures/
 
-# Hector log files
+# Parameter draw files are large
+# Version them with OSF instead
+analysis/data/derived_data/parameter-draws.csv
+analysis/data/derived_data/biome-parameter-draws.csv
+
+# Hector and CMQ log files
 logs/
 
 # GCAM output (huge!)

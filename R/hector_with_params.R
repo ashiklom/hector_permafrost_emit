@@ -20,6 +20,7 @@
 #'   biome_name = "permafrost",
 #'   frac_veg = 0.2
 #' )
+#' @importFrom magrittr %>%
 #' @export
 hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
   raw_params <- modifyList(.dots, list(...))
