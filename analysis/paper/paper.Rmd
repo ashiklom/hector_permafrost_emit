@@ -59,20 +59,6 @@ However, this increase is dampened by including permafrost C [@burke_2017_quanti
 [@burke_2017_quantifying] -- JULES and ORCHIDEE, with new permafrost scheme, combined with intermediate complexity climate-ocean model (IMOGEN), to look at climate sensitivity to permafrost C emissions.
 Models are highly sensitive to representation of soil processes, which can be more important than differences in scenario and/or climate drivers [@burke_2017_quantifying].
 
-Several studies have attempted to evaluate the potential economic impacts of current and future permafrost C emissions.
-@lawrence_2012_simulation project declines in near-surface permafrost by 33% and 72% in RCP 2.6 and 8.5, respectively, and permafrost C feedback will stabilize at 2100 in RCP 2.6.
-More recently, @hope_2015_economic projected permafrost C emissions using the SiBCASA (TODO: write in full) land surface model and used these projections as inputs to the PAGE09 integrated assessment model (IAM).
-They found that XXX.
-@chen_2019_economic also used PAGE09.
-Similarly, @gonzalez-eguino_2016_significant used the DICE (TODO: write in full) model to XXX.
-@kessler_2017_estimating also used DICE.
-
-@hope_2015_economic (and others?) rely on climate damage functions of the general form $\delta GDP = f(\delta T)$.
-Such functions are, at best, highly uncertain (TODO REF), and possibly conceptually flawed (TODO REF).
-(TODO More on this).
-GCAM (TODO full name) is an alternative (TODO REF).
-(TODO More on GCAM).
-
 (Paragraph on simple climate models.)
 Hector [@hartin_2015_simple].
 However, Hector does not have an explicit representation of permafrost C emissions.
@@ -92,6 +78,46 @@ Some more relevant references:
 Hector [@hartin_2015_simple,@hartin_2016_ocean].
 Simple climate model.
 
+(TODO: More details on terrestrial C cycle in Hector).
+The default heterotrophic respiration ($R$) scheme for a pool $p$ (detritus or soil) in Hector:
+
+$$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
+
+## Modeling workflow
+
+We evaluate the sensitivity and parametric uncertainty of three different versions of Hector.
+
+The simplest is the "global" version, which corresponds to the standard version of Hector described in [@hartin_2015_simple].
+The global land carbon sink is modeled as a single entity, with parameterizations corresponding to global averages (originally tuned to match global outputs from CMIP5; TODO REF?).
+In this configuration, we vary the following parameters:
+CO~2~ fertilization effect ($\beta$);
+temperature sensitivity of heterotrophic respiration, ($Q^{10}_{RH}$);
+fraction of net primary production C that goes to vegetation (`f_nppv`), detritus (`f_nppd`), and soil (`1 - f_nppv - f_nppd`);
+and
+fraction of vegetation litter C that goes to detritus (`f_litterd`).
+
+The second is the "biome" version, which is the same as the "global" version except that the land carbon sink is divided into two "biomes": "non-permafrost" and "permafrost".
+Each of these biomes has its own C pools, fluxes, and parameters.
+For this configuration, we varied all of the "global" parameters (previous paragraph) for _both_ biomes ($\beta_{permafrost}$, $\beta_{non-permafrost}$, $Q^10_{RH,permafrost}$, $Q^10_{RH,non-permafrost}$, etc.), as well as the distribution of global pools (vegetation, detritus, soil) and initial primary productivity (`npp_flux0`) aross these two biomes.
+
+The third is the "biome + methane" version.
+This version is the same as the "biome" version, but with an additional process that partitions total heterotrophic respiration ($R_{p,tot}$) into a CO~2~ flux ($R_{p, CO_2}$) and a CH~4~ flux ($R_p, CH_4$) as follows:
+
+$$ R_{p,tot} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
+
+$$ R_{p, CH_4} = \alpha R_{p, tot} $$
+
+$$ R_{p, CO_2} = (1 - \alpha) ^ \phi R_{p, tot} $$
+
+This process is controlled by two new biome-specific parameters:
+$\alpha$ can be interpreted as the fraction of heterotrophic respiration C that is given off as CH~4~ assuming a perfect trade-off between CO~2~ and CH~4~ emissions.
+$\phi$ defines the plasticity of this relationship;
+at $\phi$ = 1, plasticity is perfect, such that $R_{p,tot}$ is evenly split between CO~2~ and CH~4~;
+at $\phi$ = 0, CO~2~ emissions are entirely independent of CH~4~ emissions, such that total C emissions increase linearly with $\alpha$;
+at $\phi$ > 1, CO~2~ emissions decline faster than CH~4~ emissions increase.
+As such, the total C emissions attributable to heterotrophic respiration are expected to decrease as $\phi$ increases.
+In this version of Hector, we varied all of the parameters in the "biome" verson, as well as $\alpha$ and $\phi$ for each biome.
+
 ## Permafrost emissions scenarios
 
 For all scenarios, we added the emission as a combination of fossil fuel CO2 emissions (`ffi_emissions` column in Hector) and methane emissions (`CH4_emissions` column in Hector).
@@ -110,25 +136,6 @@ CO2 and CH4 emissions from SiBCASA model.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
 - 500 Gt C in loess that could be completely emitted by 2100 (plus other C sources).
 - 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years. Combine with data on permafrost spatial extent, density, etc. to generate estimates (but can back-calculate from 500 Gt C above?)
-
-
-## Modeling permafrost emissions
-
-Default heterotrophic respiration ($R$) scheme for a pool $p$ (detritus or soil) in Hector:
-
-$$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
-
-This is case 1.
-
-Case 2 uses the same formulation, but splits permafrost C into its own "biome", with its own photosynthesis ($\beta$) and respiration ($Q_{10}$) parameters.
-
-Case 3 extends Case 2 by calculating CO~2~ and CH~4~ emissions as a fraction of the total respiration, controlled by two new parameters $\alpha$ and $\phi$:
-
-$$ R_{p,tot} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
-
-$$ R_{p, CH_4} = \alpha R_{p, tot} $$
-
-$$ R_{p, CO_2} = (1 - \alpha) ^ \phi R_{p, tot} $$
 
 
 ## Parameter calibration
