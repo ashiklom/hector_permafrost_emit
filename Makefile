@@ -3,6 +3,7 @@
 all: drake
 
 drake:
+	./analysis/scripts/getcitations.R
 	./analysis/drake.R
 	rm -f Rplots.pdf
 

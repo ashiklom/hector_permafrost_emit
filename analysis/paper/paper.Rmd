@@ -3,8 +3,7 @@ title: "Hector Permafrost"
 author:
   - Alexey N. Shiklomanov
   - Ben Bond-Lamberty
-  - Ben Kravitz?
-  - Kate Calvin?
+  - Ben Kravitz
   - Corinne Hartin
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
@@ -182,7 +181,8 @@ $$ pvar(x_i) = \frac{Var(x_i)}{\sum_{i}^n {Var(x_i)}} $$
 global_dist_cap <- paste(
   "Input parameter distributions for global Hector."
 )
-readd(draws_global_sims)
+# readd(draws_global_sims)
+knitr::include_graphics(file_in(here::here("analysis", "figures", "global_draws.png")))
 ```
 
 ```{r fig-global-timeseries, fig.cap = global_ts_cap, fig.dim = c(10, 8)}
@@ -212,7 +212,8 @@ readd(sensitivity_plot_sensitivity_global_params_lastyear_global_sims)
 biome_dist_cap <- paste(
   "Input parameter distributions for global Hector."
 )
-readd(draws_biome_sims)
+# readd(draws_biome_sims)
+knitr::include_graphics(file_in(here::here("analysis", "figures", "biome_draws.png")))
 ```
 
 ```{r fig-biome-timeseries, fig.cap = biome_ts_cap, fig.dim = c(10, 8)}

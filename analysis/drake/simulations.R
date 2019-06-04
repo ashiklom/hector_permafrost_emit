@@ -6,7 +6,7 @@ ggpairs_density <- function(data, mapping, ..., low = "grey80", high = "red4") {
 
 plan <- bind_plans(plan, drake_plan(
   global_sims = file_in(!!here("analysis", "data",
-                            "output", "global-sims.fst")) %>%
+                               "output", "global-sims.fst")) %>%
     fst::read_fst() %>%
     as_tibble(),
   biome_sims = file_in(!!here::here("analysis", "data",
@@ -19,24 +19,12 @@ plan <- bind_plans(plan, drake_plan(
       GGally::ggpairs(lower = list(continuous = ggpairs_density)) +
       theme_bw(),
     transform = map(.sims = c(global_sims, biome_sims))
+  ),
+  draws_png = target(
+    file_out(!!here("analysis", "figures", fname)) %>%
+      ggplot2::ggsave(plot = draws, width = width, height = height),
+    transform = map(draws, fname = c("global_draws.png", "biome_draws.png"),
+                    width = c(7, 9), height = c(7, 9),
+                    .id = draws)
   )
 ))
-
-## plan <- bind_plans(plan, drake_plan(
-##   draws_plot = GGally::ggpairs(draws),
-##   sims = target(
-##     hector_with_params(
-##       beta = beta,
-##       q10_rh = q10_rh,
-##       f_nppv = f_nppv,
-##       f_nppd = f_nppd,
-##       f_litterd = f_litterd
-##     ),
-##     transform = map(!!!draws)
-##   ),
-##   all_sims = target(
-##     as_tibble(bind_rows(sims, .id = "id")),
-##     transform = combine(sims)
-##   ),
-##   all_sims_out = write_csv(all_sims, file_out("analysis/data/output/s1_sims.csv"))
-## ))
