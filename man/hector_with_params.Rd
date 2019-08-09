@@ -28,10 +28,9 @@ To specify units, set the \code{unit} attribute of the parameter.
 \examples{
 hector_with_params(beta = 0.5, q10_rh = 1.8)
 hector_with_params(
-  global.beta = 0.6,
+  default.beta = 0.6,
   permafrost.beta = 0.8,
-  biome_name = "permafrost",
-  frac_veg = 0.2
+  fveg_c = 0.2
 )
 }
 \author{

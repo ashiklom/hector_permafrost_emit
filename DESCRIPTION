@@ -20,7 +20,6 @@ Imports:
     purrr,
     rlang,
     tidyr,
-    hectortools,
     tibble
 Suggests: 
     testthat

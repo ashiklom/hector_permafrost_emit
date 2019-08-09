@@ -1,6 +1,6 @@
 #' Run Hector with parameters set to specific values
 #'
-#' To specify units, set the `unit` attribute of the parameter. 
+#' To specify units, set the `unit` attribute of the parameter.
 #'
 #' @param ... Named list of parameter values (e.g. `beta = 0.3`).
 #'   Names must match Hector parameter names, or arguments to
@@ -15,44 +15,43 @@
 #' @examples
 #' hector_with_params(beta = 0.5, q10_rh = 1.8)
 #' hector_with_params(
-#'   global.beta = 0.6,
+#'   default.beta = 0.6,
 #'   permafrost.beta = 0.8,
-#'   biome_name = "permafrost",
-#'   frac_veg = 0.2
+#'   fveg_c = 0.2
 #' )
 #' @importFrom magrittr %>%
 #' @export
 hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
-  raw_params <- modifyList(.dots, list(...))
-  all_names <- names(raw_params)
-  sb_names_all <- names(formals(split_biome))
-  sb_names <- intersect(all_names, sb_names_all)
   if (is.null(core)) {
     ini_file <- system.file(
       "input",
       paste0("hector_rcp", rcp, ".ini"),
       package = "hector"
     )
-    if (length(sb_names) > 0) {
-      sb_params <- raw_params[sb_names]
-      if (is.null(sb_params[["biome_name"]])) biome_name <- "permafrost"
-      core <- tryCatch(
-        do.call(split_biome, sb_params),
-        error = function(e) {
-          message("Hit the following error while creating core:\n",
-                  conditionMessage(e), ".\n",
-                  "Returning `NULL`.")
-          return(NULL)
-        })
-      if (is.null(core)) return(NULL)
-    } else {
-      core <- hector::newcore(
-        ini_file,
-        name = "sensitivity",
-        suppresslogging = TRUE
-      )
-    }
+    stopifnot(file.exists(ini_file))
+    core <- hector::newcore(
+      ini_file,
+      name = "sensitivity",
+      suppresslogging = TRUE
+    )
   }
+
+  raw_params <- modifyList(.dots, list(...))
+  all_names <- names(raw_params)
+  sb_names_all <- names(formals(hector::split_biome))
+  sb_names <- intersect(all_names, sb_names_all)
+  sb_vars <- raw_params[sb_names]
+  if (length(sb_names) > 0) {
+    sb_input <- purrr::map(sb_vars, ~c(1 - .x, .x))
+    invisible(rlang::exec(
+      hector::split_biome,
+      core = core,
+      old_biome = "global",
+      new_biomes = c("default", "permafrost"),
+      !!!sb_input
+    ))
+  }
+
   param_names <- setdiff(all_names, sb_names_all)
   params <- raw_params[param_names]
   .iout <- tryCatch({
@@ -70,7 +69,7 @@ hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
   tryCatch({
     hector::run(core)
     hector::fetchvars(core, 2000:2100) %>%
-      dplyr::mutate(!!!params)
+      dplyr::mutate(!!!params, !!!sb_vars)
   }, error = function(e) {
     message("Run failed. Returning `NULL`.\n",
             "Hit the following error:\n",
