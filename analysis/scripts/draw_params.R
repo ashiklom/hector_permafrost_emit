@@ -10,6 +10,8 @@ logdir <- here("logs")
 dir.create(logdir, recursive = TRUE, showWarnings = FALSE)
 outdir <- here("analysis", "data", "output")
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+datadir <- here("analysis", "data", "derived_data")
+dir.create(datadir, recursive = TRUE, showWarnings = FALSE)
 
 set.seed(8675309)
 ndraws <- 5000
@@ -24,8 +26,7 @@ draws <- tibble(
 ) %>%
   bind_cols(as_tibble(npp_draws))
 
-write_csv(draws, here("analysis", "data",
-                      "derived_data", "parameter-draws.csv"))
+write_csv(draws, file.path(datadir, "parameter-draws.csv"))
 
 hector_fun <- function(...) {
   library(hector.permafrost.emit)
