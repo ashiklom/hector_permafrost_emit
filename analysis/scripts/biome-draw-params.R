@@ -6,12 +6,10 @@ library(fst)
 library(here)
 library(hector.permafrost.emit)
 
-logdir <- here("logs")
-dir.create(logdir, recursive = TRUE, showWarnings = FALSE)
 outdir <- here("analysis", "data", "output")
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 datadir <- here("analysis", "data", "derived_data")
-dir.create(datadir)
+dir.create(datadir, recursive = TRUE, showWarnings = FALSE)
 
 set.seed(8675309)
 ndraws <- 10000
@@ -41,13 +39,23 @@ write_csv(draws, file.path(datadir, "biome-parameter-draws.csv"))
 
 hector_fun <- function(...) {
   library(hector.permafrost.emit)
-  hector_with_params(...)
+  tryCatch(
+    hector_with_params(...),
+    error = function(e) {
+      message("Run failed, returning NULL. ",
+              "Hit the following error:\n",
+              conditionMessage(e))
+      return(NULL)
+    }
+  )
 }
 
 result <- Q_rows(draws, hector_fun,
-                 const = list(biome_name = "permafrost"),
                  n_jobs = 50,
-                 template = list(log_file = file.path(logdir, "biome.log")))
+                 template = list(
+                   account = "epa-ccd",
+                   log_file = "/people/shik544/.cmq_logs/biome-%a.log" #nolint
+                 ))
 result_df <- result %>%
   bind_rows() %>%
   as_tibble()

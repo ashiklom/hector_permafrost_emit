@@ -30,11 +30,22 @@ write_csv(draws, file.path(datadir, "parameter-draws.csv"))
 
 hector_fun <- function(...) {
   library(hector.permafrost.emit)
-  hector_with_params(...)
+  tryCatch(
+    hector_with_params(...),
+    error = function(e) {
+      message("Run failed, returning NULL. ",
+              "Hit the following error:\n",
+              conditionMessage(e))
+      return(NULL)
+    }
+  )
 }
 
 result <- Q_rows(draws, hector_fun, n_jobs = 50,
-                 template = list(log_file = file.path(logdir, "global.log")))
+                 template = list(
+                   account = "epa-ccd",
+                   log_file = "/people/shik544/.cmq_logs/global-%a.log" #nolint
+                 ))
 result_df <- result %>%
   bind_rows() %>%
   as_tibble()

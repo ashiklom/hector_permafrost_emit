@@ -3,5 +3,8 @@ if (file.exists(rprofhome)) source(rprofhome)
 
 options(
   gcam_root = "~/Projects/hector_project/gcam-core",
-  clustermq.template = "/people/shik544/.clustermq_template"
+  clustermq.scheduler = "ssh",
+  clustermq.ssh.host = "shik544@constance.pnl.gov",
+  clustermq.ssh.log = "~/cmq_ssh.log",
+  clustermq.template = NULL
 )

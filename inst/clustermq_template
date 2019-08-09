@@ -1,10 +1,8 @@
 #!/bin/sh
 # These are required
-#SBATCH --account br19_shik544
-#SBATCH --time 01-00:00
-#SBATCH --nodes 1
-
-# #SBATCH --nodes 1-512
+#SBATCH --account {{ account | br19_shik544 }}
+#SBATCH --time {{ maxtime | 01-00:00 }}
+#SBATCH --nodes {{ n_nodes | 1 }}
 
 # These are from the drake template
 #SBATCH --job-name={{ job_name }}
