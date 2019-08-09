@@ -60,9 +60,8 @@ hector_with_params <- function(..., .dots = list(), rcp = "45", core = NULL) {
       ~hector::setvar(core, NA, .y, .x, NA)
     )
   }, error = function(e) {
-    message("Failed to set parameter value. ",
-            "Probably hit this error during `reset`. ",
-            "Returning `NULL`.")
+    message("Failed to set parameter value. Returning NULL. ",
+            "Error was:\n", conditionMessage(e))
     return(NULL)
   })
   if (is.null(.iout)) return(NULL)
