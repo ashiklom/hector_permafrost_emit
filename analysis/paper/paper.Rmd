@@ -42,6 +42,7 @@ The extent of anthropogenic emissions reduction depends on what how much help (o
 
 Permafrost is an important C reservoir.
 Total northern soil C pool is estimated at 1672 PgC, of which approximately 1466 Pg (88%) is in permafrost [@tarnocai_2009_soil].
+More recent estimates suggest that total high-latitude soil organic matter pool is 1300 Pg, with roughly 800 Pg in permafrost [@hugelius_2014_estimated].
 This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes and wetlands [@turetsky_2002_boreal; @wickland_2006_effects].
 But emissions from wet soils may be offset by high organic matter accumulation rates [@camill_2001_changes].
 Permafrost thaw in boreal peatlands in north-central Saskatchewan increased CO2 and CH4 fluxes from soil to atmosphere by 1.6 and 30 times, respectively [@turetsky_2002_boreal].
@@ -51,16 +52,22 @@ Projections of permafrost C emissions vary.
 Back-of-the-envelope estimates from [@zimov_2006_climate_change]: 10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
 
 On the other hand, warming and CO2 fertilization may increase vegetation productivity, which could increase soil C storage through enhanced litterfall; the balance of these two processes is uncertain [@jones_2005_global].
-Several modeling studies generally predict increases in soil C in high latitudes [@burke_2017_quantifying; @qian_2010_enhanced; @ito_2016_impacts].
-However, this increase is dampened by including permafrost C [@burke_2017_quantifying].
+There are additional uncertainties associated with vegetation composition (spatially variable peat accumulation) [@camill_2001_changes].
+Other large uncertainties related to soil properties and climate model structure [@harp_2016_effect].
+Several modeling studies generally predict increases in soil C sequestration at high latitudes [@burke_2017_quantifying; @qian_2010_enhanced; @ito_2016_impacts].
+However, this increase is dampened or even reversed when C emissions from permafrost thaw are included [@schaefer_2011_amount; @burke_2017_quantifying].
 
 (Previous work on modeling permafrost)
+@schaefer_2011_amount -- SiBCASA estimates 190 +/- 64 Gt C, but this does not include warming feedback or discontinuous permafrost regions.
+@harp_2016_effect -- Community Earth System Model (CESM) simulations over 100 years.
 [@burke_2017_quantifying] -- JULES and ORCHIDEE, with new permafrost scheme, combined with intermediate complexity climate-ocean model (IMOGEN), to look at climate sensitivity to permafrost C emissions.
 Models are highly sensitive to representation of soil processes, which can be more important than differences in scenario and/or climate drivers [@burke_2017_quantifying].
+But @harp_2016_effect argue that model structural uncertainty is larger than soil property uncertainty.
 
 (Paragraph on simple climate models.)
 Hector [@hartin_2015_simple].
-However, Hector does not have an explicit representation of permafrost C emissions.
+In this study, we use Hector to evaluate the global sensitivty of climate to terrestrial biosphere processes, and how this uncertainty 
+The current version of Hector does not have an explicit representation of permafrost C emissions.
 In this study, we investigate whether the additional complexity and parametric and structural uncertainty of an explicit representation of permafrost may be warranted in Hector.
 To do this, we evaluate the sensitivity of climate variables (as predicted by Hector) to several different exogenous scenarios of permafrost C emissions.
 (TODO Modify this to be about economic impact)
