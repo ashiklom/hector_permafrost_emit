@@ -166,3 +166,74 @@ lines(pd$beta, y$fit - y$se.fit, lty = "dashed")
 
 plan %>% pull(target)
 readd(draws_biome_sims)
+
+##################################################
+#
+##################################################
+loadd(lastyear_biome_sims)
+loadd(lastyear_global_sims)
+
+mvfit <- function(dat) {
+  dat <- filter(dat, variable == "Tgav")
+  dat %>%
+    select(-scenario, -year, -variable, -units, -value) %>%
+    colnames() %>%
+    paste(collapse = " + ") %>%
+    sprintf(fmt = "value ~ (%s) ^ 2") %>%
+    as.formula() %>%
+    lm(data = dat) %>%
+    step()
+}
+gfit <- mvfit(lastyear_global_sims)
+summary(gfit)
+
+corrplot::corrplot(cov2cor(vcov(gfit)), method = "number", col = cp)
+
+bfit <- mvfit(lastyear_biome_sims)
+summary(bfit)[["coefficients"]][,c(1,4)] %>%
+  as_tibble(rownames = "term") %>%
+  ## filter(`Pr(>|t|)` < 0.01) %>%
+  arrange(desc(abs(Estimate))) %>%
+  select(term, Estimate) %>%
+  print(n = Inf)
+
+lm(value ~ permafrost.warmingfactor, data = filter(lastyear_biome_sims, variable == "Tgav"))
+
+lastyear_biome_sims %>%
+  filter(variable == "Tgav") %>%
+  ggplot() +
+  aes(x = permafrost.warmingfactor, y = value) +
+  geom_point() +
+  geom_smooth()
+
+corrplot::corrplot(cov2cor(vcov(bfit)), method = "number", col = cp)
+
+summary(filter(lastyear_global_sims, variable == "Tgav"))
+
+cp <- colorRampPalette(c("red4", "grey80", "blue4"))(200)
+
+ggplot(dat) +
+  aes(x = default.beta, y = default.q10_rh, color = value) +
+  geom_point() +
+  scale_color_gradient(low = "grey80", high = "red4")
+
+ggp2 <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_hex(stat = )
+}
+
+dat %>%
+  select(-scenario, -year, -variable, -units) %>%
+  GGally::ggpairs(aes(color = value),
+                  diag = list(continuous = "blank"),
+                  upper = list(continuous = "blank"),
+                  lower = list(continuous = _density),
+                  shape = ".")
+
+
+scatter_grid(dat)
+scatter_grid(lastyear_biome_sims)
+dat <- lastyear_biome_sims
+plot_list[[6]]
+for (i in 7:14) print(plot_list[[i]])
+do.call(plot_grid, plot_list)
