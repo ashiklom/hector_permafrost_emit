@@ -237,3 +237,9 @@ dat <- lastyear_biome_sims
 plot_list[[6]]
 for (i in 7:14) print(plot_list[[i]])
 do.call(plot_grid, plot_list)
+
+##################################################
+s <- lastyear_global_sims %>%
+  group_by(variable) %>%
+  sensitivity_analysis(!!!global_params)
+param_types
