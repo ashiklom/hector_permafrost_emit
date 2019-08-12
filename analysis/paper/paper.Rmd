@@ -66,7 +66,7 @@ But @harp_2016_effect argue that model structural uncertainty is larger than soi
 
 (Paragraph on simple climate models.)
 Hector [@hartin_2015_simple].
-In this study, we use Hector to evaluate the global sensitivty of climate to terrestrial biosphere processes, and how this uncertainty 
+In this study, we use Hector to evaluate the global sensitivty of climate to terrestrial biosphere processes, and how this uncertainty is affected by permafrost emissions.
 The current version of Hector does not have an explicit representation of permafrost C emissions.
 In this study, we investigate whether the additional complexity and parametric and structural uncertainty of an explicit representation of permafrost may be warranted in Hector.
 To do this, we evaluate the sensitivity of climate variables (as predicted by Hector) to several different exogenous scenarios of permafrost C emissions.
