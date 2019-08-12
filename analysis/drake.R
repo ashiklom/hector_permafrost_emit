@@ -26,6 +26,7 @@ expose_imports("hector.permafrost.emit")
 args <- commandArgs(trailingOnly = TRUE)
 run_all <- "--all" %in% args
 cluster <- "--cluster" %in% args
+make <- "make" %in% args
 
 paper_file <- here("analysis", "paper", "paper.Rmd")
 
@@ -34,34 +35,34 @@ plan <- drake_plan()
 drake_files <- list.files(here("analysis", "drake"), full.names = TRUE)
 for (drake_file in drake_files) source(drake_file)
 
-if (interactive()) {
-  ## callr::rscript(here::here("analysis", "drake.R"), cmdargs = "--all")
-  callr::rscript(here::here("analysis", "drake.R"))
+if (cluster) {
+  parallelism <- "clustermq"
+  jobs <- 50
 } else {
-  if (cluster) {
-    parallelism <- "clustermq"
-    jobs <- 50
-  } else {
-    parallelism <- "future"
-    jobs <- parallel::detectCores()
-  }
-  dconf <- drake_config(
-    plan,
-    parallelism = parallelism,
-    jobs = jobs,
-    prework = quote({
-      pkgload::load_all(".", attach_testthat = FALSE, quiet = TRUE)
-    })
-  )
+  parallelism <- "future"
+  jobs <- parallel::detectCores()
+}
+dconf <- drake_config(
+  plan,
+  parallelism = parallelism,
+  jobs = jobs,
+  prework = quote({
+    pkgload::load_all(".", attach_testthat = FALSE, quiet = TRUE)
+  })
+)
 
-  # Set number of cores depending on number of outdated tasks
-  dout <- outdated(dconf)
-  if (!cluster && length(dout) > 10) {
-    dconf[["jobs"]] <- parallel::detectCores()
-    message("Number of outdated targets (", length(dout), ") ",
-            "is greater than 10. ",
-            "Running in parallel across ", dconf[["jobs"]], " cores.")
-  }
+# Set number of cores depending on number of outdated tasks
+dout <- outdated(dconf)
+if (!cluster && length(dout) > 10) {
+  dconf[["jobs"]] <- parallel::detectCores()
+  message("Number of outdated targets (", length(dout), ") ",
+          "is greater than 10. ",
+          "Running in parallel across ", dconf[["jobs"]], " cores.")
+}
 
-  make(config = dconf)
+if (make) {
+  message("Running drake::make.")
+  drake::make(config = dconf)
+} else if (!interactive()) {
+  dconf
 }

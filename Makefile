@@ -4,7 +4,7 @@ all: drake
 
 drake:
 	./analysis/scripts/getcitations.R
-	./analysis/drake.R
+	./analysis/drake.R make
 	rm -f Rplots.pdf
 
 cluster:
