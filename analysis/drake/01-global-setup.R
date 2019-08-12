@@ -1,3 +1,5 @@
+# Get the list of global parameter names, for use in drake plan. Note that only
+# the first row of the output file is loaded.
 global_sims_head <- fst::read_fst(here::here(
   "analysis", "data", "output", "global-sims.fst"
 ), to = 1)
@@ -6,6 +8,7 @@ global_params <- global_sims_head %>%
   colnames() %>%
   rlang::syms()
 
+# Similarly, get the list of biome parameter names.
 biome_sims_head <- here::here("analysis", "data", "output", "biome-sims.fst") %>%
   fst::read_fst(to = 1)
 biome_params <- biome_sims_head %>%
