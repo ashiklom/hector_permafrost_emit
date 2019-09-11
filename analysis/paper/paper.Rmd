@@ -157,6 +157,8 @@ The distributions are shown in the following table (unless otherwise specified, 
 | Permafrost $\alpha$              | TODO                            |                      |
 | Permafrost $\phi$                | TODO                            |                      |
 
+Actual permafrost surface C fraction is around 30% [@schuur_2015_climate].
+
 We used 5000 Hector simulations for the global case and 10,000 times for the biome case (biome + methane case is TODO).
 
 
