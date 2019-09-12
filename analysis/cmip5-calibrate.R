@@ -43,10 +43,12 @@ model_wide <- model_data %>%
   select(model, year, value) %>%
   spread(model, value)
 
-model_tgav <- model_wide %>%
+model_tgav_abs <- model_wide %>%
   select(-year) %>%
-  as.matrix() %>%
-  `-`(GMT_REF)
+  as.matrix()
+
+## model_tgav <- sweep(model_tgav_abs, 2, apply(model_tgav_abs, 2, min))
+model_tgav <- sweep(model_tgav_abs, 2, GMT_REF)
 
 # Define test likelihood
 run_hector_params <- function(params, pb = NULL) {
@@ -80,7 +82,8 @@ loglike <- function(params) {
   if (isFALSE(hector)) return(-1e15)
   hector_tgav <- hector[["value"]]
   diff <- model_tgav - hector_tgav
-  sum(dnorm(diff, 0, sd = 0.01, log = TRUE))
+  ll <- sum(dnorm(diff, 0, sd = 0.01, log = TRUE))
+  ll
 }
 
 hc <- newcore(system.file("input", "hector_rcp45.ini", package = "hector"),
@@ -89,10 +92,10 @@ hc <- newcore(system.file("input", "hector_rcp45.ini", package = "hector"),
 prior <- createUniformPrior(lower = c(0, 1), upper = c(3, 1000), best = c(0.36, 2.45))
 setup <- createBayesianSetup(loglike, prior, names = c("beta", "q10"))
 samples <- runMCMC(setup, settings = list(iterations = 2000))
-## samples <- runMCMC(samples, settings = list(iterations = 10000))
+samples <- runMCMC(samples, settings = list(iterations = 2000))
 
 gelmanDiagnostics(samples)
-tracePlot(samples)
+tracePlot(samples, start = 500)
 
 
 params_df <- expand.grid(beta = seq(0, 1, 0.05), q10 = seq(1, 3, 0.1)) %>%

@@ -243,3 +243,55 @@ s <- lastyear_global_sims %>%
   group_by(variable) %>%
   sensitivity_analysis(!!!global_params)
 param_types
+
+##################################################
+cmip5 <- model_data
+
+tgav_bounds <- cmip5 %>%
+  filter(vtag == "tgav") %>%
+  group_by(year) %>%
+  summarize(lo = min(value - 13), hi = max(value - 13))
+
+ggplot(global_sims %>% filter(variable == "Tgav")) +
+  aes(x = year, y = value) +
+  geom_point()
+
+global_sims %>%
+  filter(variable == "Tgav") %>%
+  group_by(year) %>%
+  summarize(
+    lo = min(value),
+    mid = mean(value),
+    hi = max(value)
+  ) %>%
+  ggplot() +
+  aes(x = year, ymin = lo, ymax = hi) +
+  geom_ribbon(fill = "gray80") +
+  geom_ribbon(fill = NA, color = "red", data = tgav_bounds)
+
+global_sims %>%
+  filter(variable == "Tgav") %>%
+  group_by(year) %>%
+  summarize(lo = min(value), hi = max(value)) %>%
+  left_join(tgav_bounds, "year")
+
+global_sims %>%
+  filter(variable == "Tgav") %>%
+  left_join(tgav_bounds, "year") %>%
+  select(year, variable, value, lo, hi)
+
+in_bounds <- global_sims %>%
+  filter(variable == "Tgav") %>%
+  left_join(tgav_bounds, "year") %>%
+  filter(value > lo, value < hi)
+
+all_params <- global_sims %>%
+  select(beta:f_nppd) %>%
+  distinct()
+
+params_bounds <- in_bounds %>%
+  select(beta:f_nppd) %>%
+  distinct()
+
+global_sims %>%
+  filter(variable == )
