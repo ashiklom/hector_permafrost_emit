@@ -265,14 +265,14 @@ global_sensitivity_cap <- paste(
   htmlfig(),
   "Sensitivity and variance decomposition analysis for global Hector."
 )
-readd(sensitivity_plot_sensitivity_global_params_lastyear_global_sims)
+fig("sensitivity-global.png")
 ```
 
 `r mdcap(global_sensitivity_cap)`
 
 ## Biome case
 
-```{r fig-biome-scatter, fig.cap = biome_scatter_cap, fig.dim = c(8, 8)}
+```{r fig-biome-scatter, fig.cap = biome_scatter_cap}
 biome_scatter_cap <- paste(
   htmlfig(),
   "Hector outputs (with permafrost biome) at 2100 as a function of input parameter values."
@@ -282,12 +282,12 @@ fig("biome-scatter.png")
 
 `r mdcap(biome_scatter_cap)`
 
-```{r fig-biome-sensitivity, fig.cap = biome_sensitivity_cap, fig.dim = c(5, 7)}
+```{r fig-biome-sensitivity, fig.cap = biome_sensitivity_cap}
 biome_sensitivity_cap <- paste(
   htmlfig(),
   "Sensitivity and variance decomposition analysis for Hector with permafrost biome."
 )
-readd(sensitivity_plot_sensitivity_biome_params_lastyear_biome_sims)
+fig("sensitivity-biome.png")
 ```
 
 `r mdcap(biome_sensitivity_cap)`

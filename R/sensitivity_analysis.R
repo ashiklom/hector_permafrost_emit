@@ -49,6 +49,7 @@ sensitivity_analysis <- function(dat, xcols, ycol, .type = "additive") {
   xcv <- (apply(dat[, xcols], 2, var) / xmed) %>%
     tibble::enframe("param", "cv")
   pred <- apply(dat[, xcols], 2, quantile, probs = c(0.49, 0.51))
+  dpred <- apply(pred, 2, diff)
   ymed <- median(dat[[ycol]])
 
   # Elasticity
@@ -63,7 +64,8 @@ sensitivity_analysis <- function(dat, xcols, ycol, .type = "additive") {
   )
   names(el_inputs) <- xcols
   el_results <- lapply(el_inputs, predict, object = fit)
-  el_slope <- (vapply(el_results, diff, numeric(1)) / (ymed / xmed)) %>%
+  el_slope <- ((vapply(el_results, diff, numeric(1)) / dpred) /
+                 (ymed / xmed)) %>%
     tibble::enframe("param", "elasticity")
 
   # Prediction variance

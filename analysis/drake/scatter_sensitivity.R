@@ -49,17 +49,33 @@ plan <- bind_plans(plan, drake_plan(
       unnest(sens),
     transform = map(lastyear, .params = !!param_types)
   ),
-  sensitivity_plot = target(
+  sensitivity_wide = target(
     sensitivity %>%
       gather(stat, value, cv:partial_var) %>%
-      filter(stat != "pred_var") %>%
-      ggplot() +
+      filter(stat != "pred_var"),
+    transform = map(sensitivity),
+  ),
+  sensitivity_plot = target(
+    ggplot(sensitivity_wide) +
       aes(x = param, y = value) +
       geom_segment(aes(x = param, y = 0, xend = param, yend = value)) +
       geom_point() +
       coord_flip() +
       facet_grid(cols = vars(stat), rows = vars(variable), scales = "free_x") +
       theme_bw(),
-    transform = map(sensitivity)
+    transform = map(sensitivity_wide)
+  ),
+  sensitivity_plot_png = target(
+    ggsave(
+      file_out(!!here::here("analysis", "figures", .fname)),
+      sensitivity_plot,
+      width = .width, height = .height
+    ),
+    transform = map(
+      sensitivity_plot,
+      .fname = c("sensitivity-global.png",
+                 "sensitivity-biome.png"),
+      .width = c(5, 5), .height = c(5, 7)
+    )
   )
 ))
