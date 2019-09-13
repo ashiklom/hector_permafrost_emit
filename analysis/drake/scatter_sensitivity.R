@@ -29,19 +29,22 @@ plan <- bind_plans(plan, drake_plan(
   sensitivity = target(
     lastyear %>%
       group_by(variable) %>%
-      sensitivity_analysis(!!!.params) %>%
-      tidy_sensitivity(),
+      nest() %>%
+      mutate(sens = purrr::map(
+        data,
+        sensitivity_analysis,
+        xcols = as.character(.params),
+        ycol = "value"
+      )) %>%
+      select(-data) %>%
+      unnest(sens),
     transform = map(lastyear, .params = !!param_types)
   ),
   sensitivity_plot = target(
     sensitivity %>%
-      filter(
-        parameter != "total",
-        stat != "sens",
-        stat != "var"
-      ) %>%
+      gather(stat, value, vars(cv:partial_var)) %>%
       ggplot() +
-      aes(x = parameter, y = value) +
+      aes(x = param, y = value) +
       geom_segment(aes(x = parameter, y = 0, xend = parameter, yend = value)) +
       geom_point() +
       coord_flip() +
