@@ -4,16 +4,17 @@
 \alias{sensitivity_analysis}
 \title{Parameter sensitivity analysis}
 \usage{
-sensitivity_analysis(df, ..., .type = "additive")
+sensitivity_analysis(dat, xcols, ycol, .type = "additive")
 }
 \arguments{
-\item{df}{\code{data.frame} of Hector results.}
+\item{xcols}{Character vector of parameter column names}
 
-\item{...}{Unquoted names of columns describing parameters to be
-used in sensitivity analysis.}
+\item{ycol}{Name of column containing response variable}
 
 \item{.type}{Whether the multivariate fit is "additive" (\code{Y ~ a + b + c}, default) or "interactive" (\code{Y ~ a * b * c}). This argument
 supports partial matching via \code{\link[base:match.arg]{base::match.arg()}}.}
+
+\item{df}{\code{data.frame} of Hector results.}
 }
 \value{
 \code{data.frame} of sensitivity analysis results. See Details.
