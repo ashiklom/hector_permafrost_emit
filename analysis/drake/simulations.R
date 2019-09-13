@@ -16,6 +16,7 @@ plan <- bind_plans(plan, drake_plan(
   draws = target(
     .sims %>%
       select(-(scenario:units)) %>%
+      distinct() %>%
       GGally::ggpairs(lower = list(continuous = ggpairs_density)) +
       theme_bw(),
     transform = map(.sims = c(global_sims, biome_sims))

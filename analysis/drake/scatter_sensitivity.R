@@ -42,10 +42,11 @@ plan <- bind_plans(plan, drake_plan(
   ),
   sensitivity_plot = target(
     sensitivity %>%
-      gather(stat, value, vars(cv:partial_var)) %>%
+      gather(stat, value, cv:partial_var) %>%
+      filter(stat != "pred_var") %>%
       ggplot() +
       aes(x = param, y = value) +
-      geom_segment(aes(x = parameter, y = 0, xend = parameter, yend = value)) +
+      geom_segment(aes(x = param, y = 0, xend = param, yend = value)) +
       geom_point() +
       coord_flip() +
       facet_grid(cols = vars(stat), rows = vars(variable), scales = "free_x") +
