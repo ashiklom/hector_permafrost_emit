@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-library(hector.permafrost.emit) # Or use devtools::load_all('.', quiet = T) if your code is in script files, rather than as functions in the `/R` diretory
+library(hector.permafrost.emit)
 
 n <- 0
 mdcap <- function(text) {
@@ -44,9 +44,8 @@ mdcap <- function(text) {
   }
 }
 
-fig <- function(...) {
-  filepath <- here("analysis", "figures", ...)
-  knitr::include_graphics(file_in(filepath))
+f <- function(...) {
+  here::here("analysis", "figures", ...)
 }
 ```
 
@@ -173,6 +172,17 @@ The distributions are shown in the following table (unless otherwise specified, 
 | Permafrost $\alpha$              | TODO                            |                      |
 | Permafrost $\phi$                | TODO                            |                      |
 
+These distributions are also shown in Figure 1.
+
+```{r param-density, echo = FALSE, fig.cap = param_density_cap}
+param_density_cap <- paste(
+  "Input parameter distributions for this analysis."
+)
+knitr::include_graphics(file_in(f("param-density.png")))
+```
+
+`r mdcap(param_density_cap)`
+
 Actual permafrost surface C fraction is around 30% [@schuur_2015_climate].
 
 We used 5000 Hector simulations for the global case and 10,000 times for the biome case (biome + methane case is TODO).
@@ -212,14 +222,6 @@ $$ pvar(x_i) = \frac{Var(x_i)}{\sum_{i}^n {Var(x_i)}} $$
 
 ## Global case
 
-```{r fig-global-dist, fig.cap = global_dist_cap}
-global_dist_cap <- paste(
-  "Input parameter distributions for global Hector."
-)
-# readd(draws_global_sims)
-knitr::include_graphics(file_in(here::here("analysis", "figures", "global_draws.png")))
-```
-
 ```{r fig-global-timeseries, fig.cap = global_ts_cap, fig.dim = c(10, 8)}
 global_ts_cap <- paste(
   "Time series of Hector outputs for different parameter combinations."
@@ -245,15 +247,9 @@ global_sensitivity_cap <- paste(
 readd(sensitivity_plot_sensitivity_global_params_lastyear_global_sims)
 ```
 
-## Biome case
+`r mdcap(global_sensitivity_cap)`
 
-```{r fig-biome-dist, fig.cap = biome_dist_cap, fig.dim = c(9, 9)}
-biome_dist_cap <- paste(
-  "Input parameter distributions for global Hector."
-)
-# readd(draws_biome_sims)
-knitr::include_graphics(file_in(here::here("analysis", "figures", "biome_draws.png")))
-```
+## Biome case
 
 ```{r fig-biome-timeseries, fig.cap = biome_ts_cap, fig.dim = c(10, 8)}
 biome_ts_cap <- paste(
@@ -387,6 +383,28 @@ According to [@hartin_2015_simple], these were selected to be "generally consist
 <div id="refs"></div>
 
 ##### pagebreak
+
+# Appendix
+
+```{r fig-global-dist, fig.cap = global_dist_cap}
+global_dist_cap <- paste(
+  "Input parameter distributions for global Hector."
+)
+# readd(draws_global_sims)
+knitr::include_graphics(file_in(f("global_draws.png")))
+```
+
+`r mdcap(global_dist_cap)`
+
+```{r fig-biome-dist, fig.cap = biome_dist_cap, fig.dim = c(9, 9)}
+biome_dist_cap <- paste(
+  "Input parameter distributions for Hector with biomes."
+)
+# readd(draws_biome_sims)
+knitr::include_graphics(file_in(fig("biome_draws.png")))
+```
+
+`r mdcap(biome_dist_cap)`
 
 ### Colophon
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 if (getRversion() >= "3.6.0") {
   library(drake, exclude = c("expand", "gather", "plan"))
-  library(ggplot2, exclude = "ggsave")
+  library(ggplot2)
 } else {
   library(drake)
   library(ggplot2)
