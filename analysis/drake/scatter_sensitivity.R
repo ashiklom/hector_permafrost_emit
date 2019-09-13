@@ -26,6 +26,15 @@ plan <- bind_plans(plan, drake_plan(
     scatter_grid(lastyear),
     transform = map(lastyear)
   ),
+  scatter_png = target(
+    ggsave(
+      file_out(!!here::here("analysis", "figures", .fname)),
+      scatter,
+      width = .width, height = .height
+    ),
+    transform = map(scatter, .fname = c("global-scatter.png", "biome-scatter.png"),
+                    .width = c(8, 10), .height = c(5, 8))
+  ),
   sensitivity = target(
     lastyear %>%
       group_by(variable) %>%

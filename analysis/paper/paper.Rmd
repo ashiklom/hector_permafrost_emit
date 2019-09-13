@@ -250,12 +250,12 @@ fig("ts-summary.png")
 
 ## Global case
 
-```{r fig-global-scatter, fig.cap = global_scatter_cap, fig.dim = c(8, 5)}
+```{r fig-global-scatter, fig.cap = global_scatter_cap}
 global_scatter_cap <- paste(
   htmlfig(),
   "Hector outputs at 2100 as a function of input parameter values."
 )
-readd(scatter_lastyear_global_sims)
+fig("global-scatter.png")
 ```
 
 `r mdcap(global_scatter_cap)`
@@ -277,7 +277,7 @@ biome_scatter_cap <- paste(
   htmlfig(),
   "Hector outputs (with permafrost biome) at 2100 as a function of input parameter values."
 )
-readd(scatter_lastyear_biome_sims)
+fig("biome-scatter.png")
 ```
 
 `r mdcap(biome_scatter_cap)`
@@ -405,7 +405,6 @@ global_dist_cap <- paste(
   htmlfig(),
   "Input parameter distributions for global Hector."
 )
-# readd(draws_global_sims)
 fig("global_draws.png")
 ```
 
@@ -416,7 +415,6 @@ biome_dist_cap <- paste(
   htmlfig(),
   "Input parameter distributions for Hector with biomes."
 )
-# readd(draws_biome_sims)
 fig("biome_draws.png")
 ```
 

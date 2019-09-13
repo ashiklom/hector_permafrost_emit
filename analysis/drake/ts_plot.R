@@ -52,5 +52,13 @@ plan <- bind_plans(plan, drake_plan(
         legend.position = "bottom"
       ),
     transform = map(ts_summary)
+  ),
+  ts_png = target(
+    ggsave(
+      file_out(!!here::here("analysis", "figures", .fname)),
+      ts,
+      width = 10, height = 8
+    ),
+    transform = map(ts, .fname = c("global-ts.png", "biome-ts.png"))
   )
 ))
