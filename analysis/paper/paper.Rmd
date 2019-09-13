@@ -32,6 +32,22 @@ knitr::opts_chunk$set(
 )
 
 library(hector.permafrost.emit) # Or use devtools::load_all('.', quiet = T) if your code is in script files, rather than as functions in the `/R` diretory
+
+n <- 0
+mdcap <- function(text) {
+  n <<- n + 1
+  out <- sprintf("**Figure %d**: %s", n, text)
+  if (grepl("gfm", knitr::opts_knit$get("rmarkdown.pandoc.to"), ignore.case = TRUE)) {
+    out
+  } else {
+    invisible(NULL)
+  }
+}
+
+fig <- function(...) {
+  filepath <- here("analysis", "figures", ...)
+  knitr::include_graphics(file_in(filepath))
+}
 ```
 
 # Introduction
@@ -211,12 +227,16 @@ global_ts_cap <- paste(
 readd(ts_global_sims)
 ```
 
+`r mdcap(global_ts_cap)`
+
 ```{r fig-global-scatter, fig.cap = global_scatter_cap, fig.dim = c(8, 5)}
 global_scatter_cap <- paste(
   "Hector outputs at 2100 as a function of input parameter values."
 )
 readd(scatter_lastyear_global_sims)
 ```
+
+`r mdcap(global_scatter_cap)`
 
 ```{r fig-global-sensitivity, fig.cap = global_sensitivity_cap, fig.dim = c(5, 5)}
 global_sensitivity_cap <- paste(
@@ -242,6 +262,8 @@ biome_ts_cap <- paste(
 readd(ts_biome_sims)
 ```
 
+`r mdcap(biome_ts_cap)`
+
 ```{r fig-biome-scatter, fig.cap = biome_scatter_cap, fig.dim = c(8, 8)}
 biome_scatter_cap <- paste(
   "Hector outputs (with permafrost biome) at 2100 as a function of input parameter values."
@@ -249,12 +271,16 @@ biome_scatter_cap <- paste(
 readd(scatter_lastyear_biome_sims)
 ```
 
+`r mdcap(biome_scatter_cap)`
+
 ```{r fig-biome-sensitivity, fig.cap = biome_sensitivity_cap, fig.dim = c(5, 7)}
 biome_sensitivity_cap <- paste(
   "Sensitivity and variance decomposition analysis for Hector with permafrost biome."
 )
 readd(sensitivity_plot_sensitivity_biome_params_lastyear_biome_sims)
 ```
+
+`r mdcap(biome_sensitivity_cap)`
 
 ## Permafrost methane emissions
 
