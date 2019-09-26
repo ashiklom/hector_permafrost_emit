@@ -37,6 +37,9 @@ opts_chunk$set(
 
 library(hector.permafrost.emit)
 
+# Dummy target to force-rebuild this when figures change
+invisible(readd(figs_dir_t))
+
 fig <- function(...) {
   filepath <- here("analysis", "figures", ...)
   knitr::include_graphics(file_in(filepath))

@@ -30,6 +30,8 @@ make <- "make" %in% args
 
 paper_file <- here("analysis", "paper", "paper.Rmd")
 
+figfile <- function(...) here::here("analysis", "figures", ...)
+
 # Construct plan from components in "analysis/drake" directory
 plan <- drake_plan()
 drake_files <- list.files(here("analysis", "drake"), full.names = TRUE)

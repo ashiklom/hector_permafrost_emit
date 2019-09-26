@@ -20,14 +20,15 @@ plan <- bind_plans(plan, drake_plan(
     filter(!(param == "f_litterd" & x < 0.95)) %>%
     ggplot() +
     aes(x = x, y = y) +
-    geom_area() +
+    geom_area(fill = "gray85", color = "black") +
     lims(y = c(0, 1)) +
     labs(x = "Value", y = "Normalized probability density") +
     facet_wrap(vars(param), scales = "free_x") +
+    theme(strip.background = element_blank()) +
     cowplot::theme_cowplot(),
   param_density_plot_file = ggsave(
-    file_out(!!here::here("analysis", "figures", "param-density.png")),
+    file_out(!!figfile("param-density.png")),
     param_density_plot,
-    width = 10.3, height = 7.3
+    width = 10.3, height = 7.30
   )
 ))
