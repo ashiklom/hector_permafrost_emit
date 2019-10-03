@@ -4,13 +4,38 @@ ggpairs_density <- function(data, mapping, ..., low = "grey80", high = "red4") {
     scale_fill_gradient(low = low, high = high)
 }
 
+get_timestamp <- function(osf_id) {
+  stopifnot(requireNamespace("osfr", quietly = TRUE))
+  osfr::osf_retrieve_file(osf_id) %>%
+    dplyr::pull(meta) %>%
+    purrr::pluck(1, "attributes", "date_modified")
+}
+
+osf_url <- function(osf_id) file.path("https://osf.io/download/", osf_id)
+
+### OSF download simulations
+global_sims_file <- here::here("analysis", "data", "output", "global-sims.fst")
+global_sims_osf <- "z5nwa"
+biome_sims_file <- here::here("analysis", "data", "output", "biome-sims.fst")
+biome_sims_osf <- "rstg3"
+
 plan <- bind_plans(plan, drake_plan(
-  global_sims = file_in(!!here("analysis", "data",
-                               "output", "global-sims.fst")) %>%
+  global_sims_dl = target(
+    download.file(osf_url(global_sims_osf), file_out(!!global_sims_file)),
+    trigger = trigger(change = get_timestamp(global_sims_osf))
+  ),
+  biome_sims_dl = target(
+    download.file(osf_url(biome_sims_osf), file_out(!!biome_sims_file)),
+    trigger = trigger(change = get_timestamp(biome_sims_osf))
+  )
+))
+
+### Load simulations and draw raw results
+plan <- bind_plans(plan, drake_plan(
+  global_sims = file_in(!!global_sims_file) %>%
     fst::read_fst() %>%
     as_tibble(),
-  biome_sims = file_in(!!here::here("analysis", "data",
-                                    "output", "biome-sims.fst")) %>%
+  biome_sims = file_in(!!biome_sims_file) %>%
     fst::read_fst() %>%
     as_tibble(),
   draws = target(
