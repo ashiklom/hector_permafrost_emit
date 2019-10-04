@@ -1,12 +1,11 @@
-# Get the list of global parameter names, for use in drake plan. Note that only
-# the first row of the output file is loaded.
-global_sims_head <- fst::read_fst(here::here(
-  "analysis", "data", "output", "global-sims.fst"
-), to = 1)
-global_params <- global_sims_head %>%
-  select(-(scenario:units)) %>%
-  colnames() %>%
-  rlang::syms()
+global_params_s <- c("beta", "q10_rh", "f_litterd", "f_nppv", "f_nppd")
+global_params <- rlang::syms(global_params_s)
+
+biome_params_s <- expand.grid(c("global", "permafrost"), global_params_s) %>%
+  apply(1, paste, collapse = ".") %>%
+  sort() %>%
+  c("fveg_c", "fsoil_c", "fdetritus_c")
+biome_params <- rlang::syms(biome_params_s)
 
 # Similarly, get the list of biome parameter names.
 biome_sims_head <- here::here("analysis", "data", "output", "biome-sims.fst") %>%

@@ -295,3 +295,14 @@ params_bounds <- in_bounds %>%
 
 global_sims %>%
   filter(variable == )
+
+##################################################
+global_draws <- global_sims %>%
+  select(-c(scenario:units)) %>%
+  distinct()
+biome_draws <- biome_sims %>%
+  select(-c(scenario:units)) %>%
+  distinct()
+
+readr::write_csv(global_draws, global_param_file)
+readr::write_csv(biome_draws, biome_param_file)

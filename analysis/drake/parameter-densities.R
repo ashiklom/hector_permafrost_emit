@@ -1,10 +1,10 @@
+derived_dir <- fs::dir_create(here::here("analysis", "data", "derived-data"))
+global_param_file <- fs::path(derived_dir, "parameter-draws.csv")
+biome_param_file <- fs::path(derived_dir, "biome-parameter-draws.csv")
+
 plan <- bind_plans(plan, drake_plan(
-  global_inparams = read_csv(file_in(!!here::here(
-    "analysis", "data", "derived_data", "parameter-draws.csv"
-  ))),
-  biome_inparams = read_csv(file_in(!!here::here(
-    "analysis", "data", "derived_data", "biome-parameter-draws.csv"
-  ))) %>%
+  global_inparams = read_csv(file_in(!!global_param_file)),
+  biome_inparams = read_csv(file_in(!!biome_param_file)) %>%
     select(matches("warmingfactor|_c")),
   densities = target(
     purrr::map(.inparams, density, cut = 0) %>%

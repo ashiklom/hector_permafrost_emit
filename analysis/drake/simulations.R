@@ -11,12 +11,13 @@ get_timestamp <- function(osf_id) {
     purrr::pluck(1, "attributes", "date_modified")
 }
 
-osf_url <- function(osf_id) file.path("https://osf.io/download/", osf_id)
+osf_url <- function(osf_id) file.path("https://osf.io/download", osf_id)
 
 ### OSF download simulations
-global_sims_file <- here::here("analysis", "data", "output", "global-sims.fst")
+sims_outdir <- fs::dir_create(here::here("analysis", "data", "output"))
+global_sims_file <- fs::path(sims_outdir, "global-sims.fst")
 global_sims_osf <- "z5nwa"
-biome_sims_file <- here::here("analysis", "data", "output", "biome-sims.fst")
+biome_sims_file <- fs::path(sims_outdir, "biome-sims.fst")
 biome_sims_osf <- "rstg3"
 
 plan <- bind_plans(plan, drake_plan(
