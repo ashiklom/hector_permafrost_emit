@@ -168,14 +168,14 @@ param_labs <- c(
 param_labs <- c(
   default.beta = "Beta[Temp]",
   default.q10_rh = "Q10[Temp]",
-  default.f_nppv = "f(NPP -> Veg)[Temp]",
-  default.f_nppd = "f(NPP -> Det.)[Temp.]",
+  default.f_nppv = "f(NPP-Veg)[Temp]",
+  default.f_nppd = "f(NPP-Det.)[Temp.]",
   default.f_litterd = "f(Litter -> Det.)[Temp.]",
   permafrost.beta = "Beta[Arc.]",
   permafrost.q10_rh = "Q10[Arc]",
-  permafrost.f_nppv = "f(NPP -> Veg.)[Arc.]",
-  permafrost.f_nppd = "f(NPP -> Veg.)[Arc.]",
-  permafrost.f_litterd = "f(Litter -> Det.)[Arc.]",
+  permafrost.f_nppv = "f(NPP-Veg.)[Arc.]",
+  permafrost.f_nppd = "f(NPP-Det.)[Arc.]",
+  permafrost.f_litterd = "f(Litter-Det.)[Arc.]",
   permafrost.warmingfactor = "dT[Arctic]",
   fveg_c = "f(Veg. C)[Arctic]",
   fsoil_c = "f(Soil C)[Arctic]",
@@ -190,7 +190,9 @@ biome_sensitivity %>%
   geom_segment(aes(xend = 0, yend = param)) +
   geom_point() +
   theme_cowplot() +
-  labs(x = "Frac. variance in Global Temp. explained") +
+  labs(x = "Partial variance") +
   theme(
-    axis.title.y = element_blank()
+    axis.title.y = element_blank(),
+    axis.text.y = element_text(size = 11)
   )
+ggsave(path(figdir, "partial-variance.png"), width = 4.11, height = 6.84)
