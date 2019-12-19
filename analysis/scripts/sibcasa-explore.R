@@ -93,22 +93,56 @@ sib_wide <- sib_data %>%
   pivot_wider(names_from = "variable", values_from = "value") %>%
   as_tsibble(index = year, key = c(rcp, model))
 
-ggplot(subset(sib_wide, Tgav <= 4)) +
+plt <- ggplot(sib_wide) +
   aes(x = Tgav, y = ch4, color = rcp) +
   geom_point() +
   facet_wrap(vars(model))
+plt
 
-#' For a dynamic emissions model like the one we want to include in Hector,
-#' what we _really_ want is the relationship between changes in temperature
-#' and changes in methane emissions.
+#' # Fitting a dynamic model
+#'
+#' What we actually want is to fit a model that accounts for declines in the available methane pool as emissions happen.
+#' This is hard to solve for analytically, so we will instead fit it numerically.
 
-sib_wide %>%
-  group_by_key() %>%
-  mutate(dch4 = ch4 - lag(ch4), dTgav = Tgav - lag(Tgav)) %>%
-  ggplot() +
-  aes(x = dTgav, y = dch4, color = rcp) +
-  geom_point() +
-  facet_wrap(vars(model))
+ch4_model <- function(Tgav, CH4_0, tau, q10,
+                      params = NULL) {
+  if (!is.null(params)) {
+    CH4_0 <- params[1]
+    tau <- params[2]
+    q10 <- params[3]
+    alpha <- 0
+  }
+  ntime <- length(Tgav)
+  # Constant through time
+  mult <- q10 ^ (Tgav / 10)
+  alt <- alpha * ifelse(Tgav > 0, log(Tgav), 0)
+  # Initial conditions
+  result <- matrix(NA_real_, ntime, 2)
+  colnames(result) <- c("flux", "CH4")
+  result[1, "flux"] <- (CH4_0 / tau) * mult[1]
+  result[1, "CH4"] <- CH4_0 - result[1, "flux"] + alt[1]
+  for (t in seq(2, ntime)) {
+    result[t, "flux"] <- (result[t - 1, "CH4"] / tau) * mult[t]
+    result[t, "CH4"] <- result[t - 1, "CH4"] - result[t, "flux"] + alt[t]
+  }
+  result
+}
+sib_wide_sub <- sib_wide %>%
+  filter(rcp == "85", model == "CNRM",
+         !is.na(ch4), !is.na(Tgav)) %>%
+  arrange(year)
+tgav <- sib_wide_sub[["Tgav"]]
+obs <- sib_wide_sub[["ch4"]]
+objective <- function(params) {
+  pred <- ch4_model(tgav, params = params)
+  sum((obs - pred[, "flux"]) ^ 2)
+}
+bestfit <- optim(c(20, 5e4, 1e3, 2), objective)
+output <- ch4_model(tgav, params = bestfit$par)
+par(mfrow = c(2, 1))
+plot(obs, col = "black")
+lines(output[, "flux"], type = 'l', col = "red")
+plot(output[, "CH4"], type = 'l')
 
 #' This version has basically no relationship because of the many interannual wiggles in the simulations.
 #' Below, we smooth those out with a 20 year running mean to produce a stronger signal.
