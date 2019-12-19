@@ -144,36 +144,44 @@ plot(obs, col = "black")
 lines(output[, "flux"], type = 'l', col = "red")
 plot(output[, "CH4"], type = 'l')
 
-#' This version has basically no relationship because of the many interannual wiggles in the simulations.
-#' Below, we smooth those out with a 20 year running mean to produce a stronger signal.
+#' The CH4 relationship
 
-window_size <- 20
-sib_wide_d <- sib_wide %>%
+sib_wide %>%
   group_by_key() %>%
-  mutate(ch4_slide = slide_dbl(ch4, mean, na.rm = TRUE, .size = window_size),
-         Tgav_slide = slide_dbl(Tgav, mean, na.rm = TRUE, .size = window_size),
-         dch4_slide = ch4_slide - lag(ch4_slide),
-         dTgav_slide = Tgav_slide - lag(Tgav_slide)) %>%
-  ungroup()
+  mutate(
+    ch4_s = slide_dbl(ch4, mean, na.rm = TRUE, .size = 20),
+    dch4 = ch4_s - lag(ch4_s),
+    dch4_s = slide_dbl(dch4, mean, na.rm = TRUE, .size = 20),
+    d2ch4 = dch4_s - lag(dch4_s)
+  ) %>%
+  {
+    plt %+%
+      . +
+      aes(y = d2ch4) +
+      geom_smooth()
+  }
 
-ggplot(sib_wide_d) +
-  aes(x = dTgav_slide, y = dch4_slide) +
-  geom_point() +
-  facet_wrap(vars(model))
-
-#' Large increases in temperature have a disproportionately large impact on methane emissions,
-#' so an exponential regression ($y = a e^{bx}$, or $log(y) = \alpha + \beta x$) is a good choice.
+#' An exponential regression ($y = a e^{bx}$, or $log(y) = \alpha + \beta x$) seems like a good choice for this relationship.
 #' This also agrees well with the typical mathematical representation of temperature-dependent reactions.
 #'
 #' Below, we fit an exponential regression by model:
 
-sib_wide_fits_n <- sib_wide_d %>%
+sib_wide_fits_n <- sib_wide %>%
   as_tibble() %>%
-  select(model, dTgav_slide, dch4_slide) %>%
+  select(model, Tgav, ch4) %>%
+  filter(
+    !is.na(ch4),
+    !is.na(Tgav),
+    # Zero and negative values don't work for `log`
+    ch4 > 0,
+    # At this point, start running out of C, so the temperature sensitivty no
+    # longer applies.
+    Tgav <= 3.5,
+  ) %>%
   group_by(model) %>%
   nest() %>%
   mutate(
-    fit = map(data, lm, formula = log(dch4_slide) ~ dTgav_slide),
+    fit = map(data, lm, formula = log(ch4) ~ Tgav),
     pred = map2(data, fit, modelr::add_predictions),
     resid = map2(data, fit, modelr::add_residuals)
   ) %>%
@@ -182,7 +190,7 @@ sib_wide_fits_n <- sib_wide_d %>%
 #' The resulting fits:
 
 ggplot() +
-  aes(x = dTgav_slide, y = dch4_slide) +
+  aes(x = Tgav, y = ch4) +
   geom_point(data = unnest(sib_wide_fits_n, data),
              color = "gray60") +
   geom_line(aes(y = exp(pred)), color = "blue", size = 1,
