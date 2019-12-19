@@ -35,7 +35,7 @@ methane_data <- paste0("Meth_ann_", rcps) %>%
   bind_rows(.id = "rcp") %>%
   mutate(
     variable = "ch4",
-    unit = "Gt",
+    unit = "Gt CH4",
     year = floor(`Date (yr)`)
   ) %>%
   select(
@@ -59,7 +59,22 @@ temp_data <- paste0("Glob_T_anom_", rcps) %>%
   ) %>%
   pivot_longer(c(CNRM:MPI), "model", "value")
 
-sib_data <- bind_rows(methane_data, temp_data)
+resp_data <- paste0("Resp_ann_", rcps) %>%
+  map(read_excel, path = sib_file) %>%
+  setNames(rcps) %>%
+  bind_rows(.id = "rcp") %>%
+  mutate(
+    variable = "rh",
+    unit = "Gt CO2",
+    year = floor(`Date (yr)`)
+  ) %>%
+  select(
+    variable, unit, rcp, year,
+    CNRM = 3, GISS = 4, HARD = 5, IPSL = 6, MPI = 7
+  ) %>%
+  pivot_longer(c(CNRM:MPI), "model", "value")
+
+sib_data <- bind_rows(methane_data, temp_data, resp_data)
 
 #' A graphical summary of the results:
 
