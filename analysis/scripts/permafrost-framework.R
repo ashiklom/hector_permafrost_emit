@@ -87,7 +87,7 @@ ggplot(sib_all) +
   facet_wrap(vars(model))
 
 air_perm_temp_fits <- sib_all %>%
-  select(model, kj, Perm_T_45) %>%
+  select(model, Glob_T_anom_45, Perm_T_45) %>%
   filter(!is.na(Perm_T_45), !is.na(Glob_T_anom_45)) %>%
   group_by(model) %>%
   nest() %>%
