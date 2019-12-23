@@ -16,7 +16,6 @@
 library(hector)
 library(tidyverse)
 library(readxl)
-library(patchwork)
 stopifnot(
   requireNamespace("cowplot", quietly = TRUE),
   requireNamespace("here", quietly = TRUE)
@@ -70,21 +69,18 @@ ggplot(sib_all_long) +
 #'
 #' First, let's get a sense of the relationships in the data.
 
-ggplot(sib_all) +
+plt <- ggplot(sib_all) +
   aes(x = Glob_T_anom_45, y = Perm_T_45) +
   geom_point(alpha = 0.5, size = 0.5) +
   geom_smooth(se = FALSE) +
   facet_wrap(vars(model))
+plt
 
 #' For CNRM, IPSL, and MPI, the relationship is mostly linear, with some saturation around Tgav = 3.
 #' For GISS and HARD, the relationship is closer to an exponential.
 #' As a first approximation, let's assume the relationship is linear.
 
-ggplot(sib_all) +
-  aes(x = Glob_T_anom_45, y = Perm_T_45) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  facet_wrap(vars(model))
+plt + geom_smooth(method = "lm", se = FALSE, color = "red")
 
 air_perm_temp_fits <- sib_all %>%
   select(model, Glob_T_anom_45, Perm_T_45) %>%
@@ -105,20 +101,17 @@ air_perm_temp_coefs
 #'
 #' Again, let's start with getting a sense of the relationships in the data.
 
-ggplot(sib_all) +
+plt <- ggplot(sib_all) +
   aes(x = Perm_T_45, y = Perm_vol_45) +
   geom_point(alpha = 0.5, size = 0.5) +
   geom_smooth(se = FALSE) +
   facet_wrap(vars(model), scales = "fixed")
+plt
 
 #' Again, some of the relationships are slightly curvier than others,
 #' but a linear fit seems like a good first approximation.
 
-ggplot(sib_all) +
-  aes(x = Perm_T_45, y = Perm_vol_45) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  facet_wrap(vars(model), scales = "fixed")
+plt + geom_smooth(method = "lm", se = FALSE, color = "red")
 
 perm_temp_vol_fits <- sib_all %>%
   select(model, Perm_T_45, Perm_vol_45) %>%
