@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+chadburn_estimated_permafrost_maps.zip
+chadburn_estimated_permafrost_maps/

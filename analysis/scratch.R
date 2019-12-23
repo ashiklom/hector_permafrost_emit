@@ -306,3 +306,37 @@ biome_draws <- biome_sims %>%
 
 readr::write_csv(global_draws, global_param_file)
 readr::write_csv(biome_draws, biome_param_file)
+
+##################################################
+nls_fit <- nls(
+  perm_area ~ alpha * exp(beta * degree) + gamma,
+  data = areas,
+  start = list(alpha = exp(13), beta = -0.42, gamma = 0)
+)
+p <- predict(nls_fit, data)
+
+lm(perm_area ~ degree, data = areas)
+
+map1 <- ncdf4::nc_open(fs::path(ncdir, "map_1mean.nc"))
+map1_r <- raster::raster(fs::path(ncdir, "map_1mean.nc"))
+
+my_bbox <- sp::Polygon(matrix(c(
+  40, -180,
+  40, 180,
+  0, 180,
+  0, -180
+), ncol = 2, byrow = TRUE))
+
+map1_crop <- raster::crop(map1_r, raster::extent(-180, 180, 40, 90))
+raster::plot(map1_crop)
+
+map1_r2 <- raster::projectRaster(map1_crop, crs = stereo)
+
+m <- raster::getValues(map1_r2)
+m[m < 0] <- NA
+min(m, na.rm = TRUE)
+max(m, na.rm = TRUE)
+
+sum(m, na.rm = TRUE) / sum(!is.na(m))
+
+raster::plot(map1_r)
