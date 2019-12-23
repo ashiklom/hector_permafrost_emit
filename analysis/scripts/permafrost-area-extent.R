@@ -26,19 +26,26 @@ if (!dir_exists(ncdir)) {
 stereo_nh <- paste("+proj=stere +lat_0=90 +lon_0=-98 +k=0.9996",
                    "+x_0=0 +y_0=0 +datum=NAD27 +units=m +no_defs")
 
-
-degree <- 1
 get_area <- function(degree) {
+  message("Processing ", degree)
   filename <- path(ncdir, sprintf("map_%smean.nc", as.character(degree)))
   r <- raster(filename)
-  # Northern Hemisphere
-  nh <- extent(-180, 180, 0, 90)
-  r_nh <- crop(r, nh)
-  r_nh_proj <- projectRaster(r_nh, crs = stereo_nh)
-  vals <- getValues(r_nh_proj)
-  vals[vals < 0] <- 0
+  r_areas <- area(r)
+  prd <- r_areas * r
+  vals <- getValues(prd)
   sum(vals, na.rm = TRUE)
+
+  # Northern Hemisphere
+  nh <- extent(-180, 180, 30, 90)
+  r_nh <- crop(r, nh)
+  r_nh_proj <- projectRaster(r_nh, crs = lambers_nh)
+  vals <- getValues(r_nh_proj)
+  ## vals[vals < 0] <- 0
+  ## r_areas <- area(r_nh_proj)
+  sum(vals, na.rm = TRUE) * prod(res(r_nh_proj))
 }
+
+hist <- get_area("historical_")
 
 areas <- tibble::tibble(
   degree = c(1, 1.5, 2, 3, 4, 5, 6),

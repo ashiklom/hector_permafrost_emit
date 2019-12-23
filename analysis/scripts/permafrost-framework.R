@@ -140,7 +140,7 @@ perm_temp_vol_coefs
 #' However, it is easy enough to estimate based on global observations of permafrost C.
 
 # Maximum permafrost volume (km3)
-max_pf_vol <- max(sib_vol[["Perm_vol_45"]])
+max_pf_vol <- max(sib_all[["Perm_vol_45"]], na.rm = TRUE)
 
 # Pg C in surface (0-3 m deep) permafrost, from Schuur et al. 2015 [schuur_2015_climate]
 surface_pf <- 1035
@@ -178,3 +178,34 @@ sib_all %>%
   aes(x = year, y = value, color = model) +
   geom_line() +
   facet_grid(vars(variable), scales = "free_y")
+
+#' The main reason C emissions here are nonlinear is because of the confounding factor of permafrost depth:
+#' The more permafrost thaws, the more warming it takes to thaw more permafrost because it occurs deeper in the soil.
+#'
+#' The SiBCASA results don't include anything about permafrost depth,
+#' but we can derive depth by combining its permafrost volume estimates
+#' with an independent estimates of permafrost area sensitivity to temperature
+#' (from Chadburn et al. 2017).
+#' Specifically, Chadburn et al. estimate a sensitivity of 4 million km2 deg C-1.
+
+pf_temp_slope <- 4.0e6  # km2 degC -1
+
+#' We can use this value to estimate the area loss from each temperature scenario,
+#' and, combined with the estimates of permafrost volume, the average permafrost depth.
+
+# Baseline for Chadburn et al. is 1960-1990
+pf_area_baseline <- 15.5e6 # km2
+baseline <- sib_all %>%
+  filter(year >= 1960, year <= 1990) %>%
+  summarize_at(vars(c(-year, -model)), mean)
+
+sib_all2 <- sib_all %>%
+  mutate(
+    ## perm_area = pf_area_baseline - pf_temp_slope *
+    ##   (Glob_T_anom_45 - baseline[["Glob_T_anom_45"]]), # km2
+    perm_depth = (Perm_vol_45 / pf_area_baseline) * 1000 # Meters
+  )
+
+ggplot(sib_all2) +
+  aes(x = year, y = perm_depth, color = model) +
+  geom_line()
