@@ -172,6 +172,71 @@ sib_all %>%
   geom_line() +
   facet_grid(vars(variable), scales = "free_y")
 
+#' The model we are fitting looks like this:
+#'
+#' \[
+#' F(t) = C(t) (1 - p) (1 - \exp\frac{T_0 - T(t)}{\tau})
+#' \]
+#'
+#' where $t$ is the current time step,
+#' $F(t)$ is the total C decomposition,
+#' $C(t)$ is the current total C pool,
+#' $p$ is the fractional size of the passive C pool (time-invariant parameter),
+#' $T_0$ is the baseline permafrost temperature,
+#' $T(t)$ is the current permafrost temperature,
+#' and $\tau$ is the e-folding time of permafrost decomposition.
+#'
+#' Total respiration
+
+sib_sub <- sib_all %>%
+  filter(
+    model == "CNRM",
+    !is.na(Resp_ann_45),
+    !is.na(perm_c)
+  ) %>%
+  arrange(year)
+mF <- sib_sub[["Resp_ann_45"]]
+mC <- sib_sub[["perm_c"]] * 44 / 12
+mT <- sib_sub[["Perm_T_45"]]
+mstart <- c(p = 0.0043, T0 = -12, tau = 70)
+
+plot(Resp_ann_45 ~ Glob_T_anom_45, data = sib_sub)
+plot(mF ~ mT)
+
+mod <- function(pars, mT, mC) {
+  p <- pars[1]
+  p <- 0.043
+  T0 <- pars[2]
+  tau <- pars[3]
+  ntime <- length(mT)
+  mF <- numeric(ntime)
+  mC2 <- mC[1]
+  for (i in seq(1, ntime)) {
+    aa <- exp((T0 - mT[i]) / tau)
+    mF[i] <- mC2 * (1 - p) * (1 - aa)
+    mC2 <- mC[i + i] - mF
+  }
+  mF
+}
+ll <- function(x) {
+  sum((mF - mod(x, mT, mC)) ^ 2)
+}
+mfit <- optim(mstart, ll)
+result <- sib_sub %>%
+  mutate(pred = perm_c * (1 - mfit$par["p"]) *
+           (1 - exp((mfit$par["T0"] - Perm_T_45) / mfit$par["tau"])))
+ggplot(result) +
+  aes(x = year) +
+  geom_line(aes(y = Resp_ann_45, color = "obs")) +
+  geom_line(aes(y = pred, color = "pred"))
+
+# mfit <- nls(mF ~ mC * (1 - p) * (1 - exp((T0 - mT) / tau)),
+#             start = mstart)
+mfit <- nls(Resp_ann_45 ~ perm_c * (1 - p) * (1 - exp((T0 - Perm_T_45) / tau)),
+            data = sib_sub,
+            start = mstart)
+
+
 #' The main reason C emissions here are nonlinear is because of the confounding factor of permafrost depth:
 #' The more permafrost thaws, the more warming it takes to thaw more permafrost because it occurs deeper in the soil.
 #'
