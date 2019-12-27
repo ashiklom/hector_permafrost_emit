@@ -16,6 +16,7 @@
 library(hector)
 library(tidyverse)
 library(readxl)
+library(tsibble, exclude = "id")
 stopifnot(
   requireNamespace("cowplot", quietly = TRUE),
   requireNamespace("here", quietly = TRUE)
@@ -267,3 +268,36 @@ sib_all2 <- sib_all %>%
 ggplot(sib_all2) +
   aes(x = year, y = perm_depth, color = model) +
   geom_line()
+
+##################################################
+#' Let's smooth out the wiggles to better approximate Hector behavior.
+
+sib_smooth <- sib_all %>%
+  as_tsibble(index = year, key = model) %>%
+  mutate_at(
+    vars(-c(year, model)),
+    ~slide_dbl(.x, mean, .size = 25, align = "center")
+  ) %>%
+  filter_at(vars(-c(year, model)), all_vars(!is.na(.)))
+sib_smooth_long <- sib_smooth %>%
+  pivot_longer(c(-year, -model), names_to = "variable", values_to = "value")
+
+ggplot(sib_smooth_long) +
+  aes(x = year, y = value, color = model) +
+  geom_line() +
+  facet_grid(vars(variable), scales = "free_y")
+
+ggplot(sib_smooth) +
+  aes(x = Glob_T_anom_45, y = Meth_ann_45, color = year) +
+  geom_point() +
+  facet_wrap(vars(model), scales = "fixed") +
+  scale_color_viridis_c()
+
+#' Let's experiment with some functional forms.
+#'
+#' First, the effective temperature
+
+plot(function(x) x * exp(-x * 0.2), to = 4)
+abline(0, 1, lty = 2)
+
+plot(function(x) 2 * (1 - exp(-x)), to = 10)
