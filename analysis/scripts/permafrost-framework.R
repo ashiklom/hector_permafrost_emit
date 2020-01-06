@@ -173,6 +173,21 @@ sib_all %>%
   geom_line() +
   facet_grid(vars(variable), scales = "free_y")
 
+#' Can we get away with estimating methane emissions as a fraction of overall
+#' permafrost emissions?
+sib_all %>%
+  mutate(pre2100 = year <= 2100) %>%
+  filter_at(vars(ends_with("ann_45")), all_vars(!is.na(.))) %>%
+  ggplot() +
+  aes(x = Resp_ann_45, y = Meth_ann_45, color = Perm_T_45) +
+  geom_point() +
+  facet_wrap(vars(model), scales = "fixed") +
+  scale_color_viridis_c()
+
+#' Not quite. Methane emissions start _above_ zero at the beginning, and, more
+#' importantly, decline more slowly than respiration at high temperature values
+#' (post 2100).
+#'
 #' The model we are fitting looks like this:
 #'
 #' \[
