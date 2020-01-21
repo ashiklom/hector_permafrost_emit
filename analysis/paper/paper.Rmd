@@ -125,13 +125,64 @@ Some more relevant references:
 
 ## Model description: Hector
 
-Hector [@hartin_2015_simple,@hartin_2016_ocean].
+Hector [@hartin_2015_simple,@hartin_2016_ocean,].
 Simple climate model.
 
 (TODO: More details on terrestrial C cycle in Hector).
 The default heterotrophic respiration ($R$) scheme for a pool $p$ (detritus or soil) in Hector:
 
 $$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
+
+## Hector permafrost sub-model
+
+The general principle is that permafrost constitutes an additional reserve of soil carbon that, because it is frozen, is inaccessible to microbes.
+As permafrost thaws and some fraction of this carbon becomes accessible to microbes, it is transferred from the frozen permafrost pool to the standard soil C pool, where it is decomposed by Hector's standard decomposition routine.
+Let $C[t]_{pf}$ be the permafrost C pool and $C[t]_{s}$ be the soil C pool at time $t$ (both in units of Pg C), and let $\Delta C[t]_{pf}$ be the change in the permafrost C pool at time $t$.
+The C consequences of permafrost thaw can therefore be represented as:
+
+\[ C[t]_{pf} = C[t-1]_{pf} - \Delta C[t]_{pf} \]
+
+\[ C[t]_{s} = C[t]_{s} + \Delta C[t]_{pf} \]
+
+Let $C[0]_{pf}$ be the initial size of the permafrost C pool (Pg C) and $\Phi[t]$ be the fraction of permafrost remaining (in arbitrary area or volume units) at time $t$.
+Assuming a uniform permafrost C density, $\Delta C[t]_{pf}$ can be expressed as:
+
+\[ \Delta C[t]_{pf} = \Phi[t] C[0]_{pf} \]
+
+To a first approximation, $\Phi[t]$ is a function of air temperature ($T[t]_{air}$).
+[Kessler (2015)][kessler] assume this relationship is linear.
+However, because the permafrost area fraction is, by definition, bounded by zero (and 1 [^1]), and because deeper permafrost thaws more slowly than shallow permafrost, we use a negative logistic relationship instead:
+
+[^1]: Technically, permafrost area could increase in the case of cooling temperatures, and therefore the area fraction could be greater than 1. However, because even the most aggressive climate action scenarios show temperatures that stabilize above year 2000, we assume that permafrost area will never grow more than the starting value.
+
+\[
+\Phi[t] = \frac{1}{1 + \exp\left( m T[t]_{air} + b \right)}
+\]
+
+where $m$ and $b$ are model parameters.
+For globally-averaged permafrost, $m = 0.829$ and $b = 4.078$ most closely reproduce the rate of 0.172 K$^{-1}$ reported by [Kessler (2015)] over the range of 2 to 6 K$^{-1}$.
+
+```{r sigmoid, echo = FALSE}
+sigmoid_cap <- paste(
+  "Fraction of permafrost thaw as a function of change in",
+  "global annual mean air temperature since pre-industrial (1750)."
+)
+m <- 0.829
+b <- 4.078
+kessler_m <- 0.172
+kessler_b <- 2 * kessler_m + 1
+plot(0, 0, type = "n", xlim = c(0, 10), ylim = c(0, 1),
+     xlab = expression(Delta * T[air] ~ (K)),
+     ylab = "Frac. permafrost remaining")
+curve(1 / (1 + exp(m * x - b)), 0, 10, col = 1, add = TRUE)
+abline(a = kessler_b, b = -kessler_m, lty = "dashed")
+abline(h = 1, lty = "dotted")
+legend("topright", c("Hector", "Kessler (2015)"), lty = c("solid","dashed"),
+       bg = "white")
+```
+
+[kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
+
 
 ## Model configurations
 

@@ -340,3 +340,20 @@ max(m, na.rm = TRUE)
 sum(m, na.rm = TRUE) / sum(!is.na(m))
 
 raster::plot(map1_r)
+
+##################################################
+permfunc <- function(pars) {
+  m <- pars[1]
+  b <- pars[2]
+  x <- seq(2, 6, 0.1)
+  yexp <- 1 / (1 + exp(m * x - b))
+  yline <- -0.172 * (x - 2) + 1
+  sum((yline - yexp) ^ 2)
+}
+fit <- optim(c(1.7, 8), permfunc)
+m <- fit$par[1]
+b <- fit$par[2]
+curve(1 / (1 + exp(m * x - b)), 0, 10, ylim = c(0, 1))
+abline(a = 2 * 0.172 + 1, b = -0.172)
+abline(v = c(2, 6), lty = "dashed")
+abline(h = 1, lty = "dashed")
