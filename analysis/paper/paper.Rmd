@@ -162,7 +162,7 @@ However, because the permafrost area fraction is, by definition, bounded by zero
 where $m$ and $b$ are model parameters.
 For globally-averaged permafrost, $m = 0.829$ and $b = 4.078$ most closely reproduce the rate of 0.172 K$^{-1}$ reported by [Kessler (2015)] over the range of 2 to 6 K$^{-1}$.
 
-```{r sigmoid, echo = FALSE}
+```{r sigmoid, fig.cap = sigmoid_cap}
 sigmoid_cap <- paste(
   "Fraction of permafrost thaw as a function of change in",
   "global annual mean air temperature since pre-industrial (1750)."
@@ -183,174 +183,44 @@ legend("topright", c("Hector", "Kessler (2015)"), lty = c("solid","dashed"),
 
 [kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
 
+## Configuration
 
-## Model configurations
-
-We evaluate the sensitivity and parametric uncertainty of three different versions of Hector.
-
-The simplest is the "global" version, which corresponds to the standard version of Hector described in [@hartin_2015_simple].
-The global land carbon sink is modeled as a single entity, with parameterizations corresponding to global averages (originally tuned to match global outputs from CMIP5; TODO REF?).
-In this configuration, we vary the following parameters:
-CO~2~ fertilization effect ($\beta$);
-temperature sensitivity of heterotrophic respiration, ($Q^{10}_{RH}$);
-fraction of net primary production C that goes to vegetation (`f_nppv`), detritus (`f_nppd`), and soil (`1 - f_nppv - f_nppd`);
-and
-fraction of vegetation litter C that goes to detritus (`f_litterd`).
-
-The second is the "biome" version, which is the same as the "global" version except that the land carbon sink is divided into two "biomes": "non-permafrost" and "permafrost".
-Each of these biomes has its own C pools, fluxes, and parameters.
-For this configuration, we varied all of the "global" parameters (previous paragraph) for _both_ biomes ($\beta_{permafrost}$, $\beta_{non-permafrost}$, $Q^10_{RH,permafrost}$, $Q^10_{RH,non-permafrost}$, etc.), as well as the distribution of global pools (vegetation, detritus, soil) and initial primary productivity (`npp_flux0`) across these two biomes and the relative warming factor (compared to the global average) of the permafrost biome.
-
-The third is the "biome + methane" version.
-This version is the same as the "biome" version, but with an additional process that partitions total heterotrophic respiration ($R_{p,tot}$) into a CO~2~ flux ($R_{p, CO_2}$) and a CH~4~ flux ($R_p, CH_4$) as follows:
-
-$$ R_{p,tot} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
-
-$$ R_{p, CH_4} = \alpha R_{p, tot} $$
-
-$$ R_{p, CO_2} = (1 - \alpha) ^ \phi R_{p, tot} $$
-
-This process is controlled by two new biome-specific parameters:
-$\alpha$ can be interpreted as the fraction of heterotrophic respiration C that is given off as CH~4~ assuming a perfect trade-off between CO~2~ and CH~4~ emissions.
-$\phi$ defines the plasticity of this relationship;
-at $\phi$ = 1, plasticity is perfect, such that $R_{p,tot}$ is evenly split between CO~2~ and CH~4~;
-at $\phi$ = 0, CO~2~ emissions are entirely independent of CH~4~ emissions, such that total C emissions increase linearly with $\alpha$;
-at $\phi$ > 1, CO~2~ emissions decline faster than CH~4~ emissions increase.
-As such, the total C emissions attributable to heterotrophic respiration are expected to decrease as $\phi$ increases.
-In this version of Hector, we varied all of the parameters in the "biome" verson, as well as $\alpha$ and $\phi$ for each biome.
-
-## Parameter distributions
-
-We drew parameters from loosely informative distributions that span the range of physical plausibility.
-The distributions are shown in the following table (unless otherwise specified, we used the same parameter distributions for global and biome cases):
-
-| Parameter                        | Distribution                    | Hector default value |
-|----------------------------------|---------------------------------|----------------------|
-| $\beta$                          | Uniform(0, 1)                   | 0.36                 |
-| Q^10^~RH~                        | Uniform(0, 10)                  | 2.0                  |
-| Litter-detritus fraction         | Beta(3.92, 0.08)                | 0.98                 |
-| NPP vegetation fraction          | Dirichlet(**0.35**, 0.60, 0.05) | 0.35                 |
-| NPP detritus fraction            | Dirichlet(0.35, **0.60**, 0.05) | 0.60                 |
-|----------------------------------|---------------------------------|----------------------|
-| Permafrost vegetation C fraction | Beta(1, 2)                      | --                   |
-| Permafrost soil C fraction       | Beta(1.1, 1.1)                  | --                   |
-| Permafrost detritus C fraction   | Beta(1.1, 1.1)                  | --                   |
-| Permafrost warming factor        | 1 + 3 * Beta(5, 5)              | --                   |
-|----------------------------------|---------------------------------|----------------------|
-| Non-permafrost $\alpha$          | TODO                            | --                   |
-| Non-permafrost $\phi$            | TODO                            |                      |
-| Permafrost $\alpha$              | TODO                            |                      |
-| Permafrost $\phi$                | TODO                            |                      |
-
-These distributions are also shown in Figure 1.
-
-```{r param-density, echo = FALSE, fig.cap = param_density_cap}
-param_density_cap <- paste(
-  htmlfig(),
-  "Input parameter distributions for this analysis."
-)
-fig("param-density.png")
-```
-
-`r mdcap(param_density_cap)`
-
-Actual permafrost surface C fraction is around 30% [@schuur_2015_climate].
-
-We used 5000 Hector simulations for the global case and 10,000 times for the biome case (biome + methane case is TODO).
-
-
-## Analysis of results
-
-We looked at four output variables:
-Atmospheric CO~2~ concentration (`Ca`),
-total radiative forcing (`Ftot`),
-radiative forcing from CO~2~ alone (`FCO2`),
-and
-global mean atmospheric temperature (`Tgav`).
-
-First, as a metric of overall parametric uncertainty for each case, we calculated the mean, standard deviation, and 90% and 95% quantiles of the time series for each variable for each simulation.
-Second, we evaluated the impact of parameters by plotting the values of each variable at 2100 as a function of input parameter value.
-
-Third, we performed a more rigorous sensitivity and uncertainty analysis based on @lebauer_2013_facilitating.
-As a metric of parameter uncertainty, we calculated the coefficient of variation (`cv`) for each input parameter as the ratio of its variance to its mean.
-We evaluated sensitivity as follows:
-First, we fit a multivariate Generalized Additive Model (GAM; `mgcv::gam` function in R) for each variable as a function of all the input parameters.
-Then, we calculate the sensitivity ($s$) to each parameter ($x_i$) as the slope (partial derivative) of the resulting GAM at that parameter's median ($\hat{x}$; discretized at +/- 1% of the median), holding all other parameters ($x_{i+1}..x_n$) constant:
-
-$$ s = \frac{d(GAM(x_i | x_{i + 1} .. x_n))}{d(x_i)} = \frac{GAM(1.01 x_i | ...) - GAM(0.99 x_i | ...)}{1.01 x_i - 0.99 x_i}$$
-
-We then define the "elasticity" ($\epsilon$) (or normalized sensitivity) of the model to that parameter as:
-
-$$ \epsilon = s \div \frac{\hat{y}} {\hat{x}} $$
-
-Finally, we calculate the "partial variance" of each parameter (the fractional contribution of each parameter's uncertainty to overall model predictive uncertainty) by passing the distribution of each parameter through the GAM while holding all other parameters constant, calculating the resulting predictive variance for each parameter, and then normalizing these values relative to the sum of all the variances:
-
-$$ Var(x_i) \approx Var[GAM(x_i | x_{i+1} .. x_n)] $$
-
-$$ pvar(x_i) = \frac{Var(x_i)}{\sum_{i}^n {Var(x_i)}} $$
+Initial permafrost C is set to 1035 Pg C.
 
 # Results
 
-```{r fig-summary-ts, fig.cap = summary_ts_cap}
-summary_ts_cap <- paste(
-  htmlfig(),
-  "Mean and 95% confidence interval on Hector simulations ",
-  "with different model structures and parameter combinations."
+## Effect of permafrost C
+
+```{r permafrost-c, fig.cap = }
+permafrost_c_cap <- paste(
+  "Effect of permafrost C emissions on scenarios."
 )
-fig("ts-summary.png")
+
+devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
+run_rcp <- function(rcp) {
+  inidir <- file.path("~", "Projects", "hector_project",
+                      "hector-permafrost-submodel", "inst", "input")
+  inifile <- normalizePath(file.path(inidir, paste0("hector_rcp", rcp, ".ini")))
+  stopifnot(file.exists(inifile))
+  hc <- newcore(inifile)
+  run(hc)
+  dates <- seq(1750, 2100)
+  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP())
+  no_pf <- fetchvars(hc, dates, outvars, scenario = "Original")
+  reset(hc)
+  setvar(hc, NA, PERMAFROST_C(), 1035, "PgC")
+  run(hc)
+  yes_pf <- fetchvars(hc, dates, outvars, scenario = "Permafrost")
+  return(tibble::as_tibble(dplyr::bind_rows(no_pf, yes_pf)))
+}
+r26 <- run_rcp("26")
+library(ggplot2)
+ggplot(r26) +
+  aes(x = year, y = value, color = scenario) +
+  geom_line() +
+  facet_wrap(vars(variable), scales = "free_y")
+
 ```
-
-`r mdcap(summary_ts_cap)`
-
-## Global case
-
-```{r fig-global-scatter, fig.cap = global_scatter_cap}
-global_scatter_cap <- paste(
-  htmlfig(),
-  "Hector outputs at 2100 as a function of input parameter values."
-)
-fig("global-scatter.png")
-```
-
-`r mdcap(global_scatter_cap)`
-
-```{r fig-global-sensitivity, fig.cap = global_sensitivity_cap, fig.dim = c(5, 5)}
-global_sensitivity_cap <- paste(
-  htmlfig(),
-  "Sensitivity and variance decomposition analysis for global Hector."
-)
-fig("sensitivity-global.png")
-```
-
-`r mdcap(global_sensitivity_cap)`
-
-## Biome case
-
-```{r fig-biome-scatter, fig.cap = biome_scatter_cap}
-biome_scatter_cap <- paste(
-  htmlfig(),
-  "Hector outputs (with permafrost biome) at 2100 as a function of input parameter values."
-)
-fig("biome-scatter.png")
-```
-
-`r mdcap(biome_scatter_cap)`
-
-```{r fig-biome-sensitivity, fig.cap = biome_sensitivity_cap}
-biome_sensitivity_cap <- paste(
-  htmlfig(),
-  "Sensitivity and variance decomposition analysis for Hector with permafrost biome."
-)
-fig("sensitivity-biome.png")
-```
-
-`r mdcap(biome_sensitivity_cap)`
-
-## Permafrost methane emissions
-
-**Figure**: Hector projections of parameter sensitivity (CI ribbon, or light/transparent lines), colored (faceted?) by case.
-
-**Figure**: PEcAn-like variance decomposition of parameters (for each parameter: sensitivity, uncertainty, and partial variance)
 
 # Discussion
 

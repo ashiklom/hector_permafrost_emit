@@ -357,3 +357,27 @@ curve(1 / (1 + exp(m * x - b)), 0, 10, ylim = c(0, 1))
 abline(a = 2 * 0.172 + 1, b = -0.172)
 abline(v = c(2, 6), lty = "dashed")
 abline(h = 1, lty = "dashed")
+
+devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
+run_rcp <- function(rcp) {
+  inidir <- file.path("~", "Projects", "hector_project",
+                      "hector-permafrost-submodel", "inst", "input")
+  inifile <- normalizePath(file.path(inidir, paste0("hector_rcp", rcp, ".ini")))
+  stopifnot(file.exists(inifile))
+  hc <- newcore(inifile)
+  run(hc)
+  dates <- seq(1750, 2100)
+  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP())
+  no_pf <- fetchvars(hc, dates, outvars, scenario = "Original")
+  reset(hc)
+  setvar(hc, NA, PERMAFROST_C(), 1035, "PgC")
+  run(hc)
+  yes_pf <- fetchvars(hc, dates, outvars, scenario = "Permafrost")
+  return(tibble::as_tibble(dplyr::bind_rows(no_pf, yes_pf)))
+}
+r26 <- run_rcp("26")
+library(ggplot2)
+ggplot(r26) +
+  aes(x = year, y = value, color = scenario) +
+  geom_line() +
+  facet_wrap(vars(variable), scales = "free_y")
