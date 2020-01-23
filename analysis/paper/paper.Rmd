@@ -222,7 +222,7 @@ run_rcp <- function(rcp) {
   hc <- newcore(inifile)
   dates <- seq(1750, 2100)
   run(hc, max(dates))
-  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP(), PERMAFROST_C(), SOIL_C())
+  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP(), "f_frozen", SOIL_C())
   no_pf <- fetchvars(hc, dates, outvars, scenario = "Original")
   reset(hc)
   setvar(hc, 0, PERMAFROST_C(), 1035, "PgC")
@@ -236,12 +236,13 @@ names(rcps) <- paste0("RCP", rcps)
 results <- purrr::map_dfr(rcps, run_rcp, .id = "RCP")
 
 results %>%
-  mutate(variable = recode(
+  mutate(variable = recode_factor(
     variable,
-    Ca = "Atmospheric CO2 (ppm)",
     Tgav = "Global mean temperature anomaly (K)",
+    Ca = "Atmospheric CO2 (ppm)",
+    soil_c = "Active soil C pool (PgC)",
     permafrost_c = "Permafrost C pool (PgC)",
-    soil_c = "Soil C pool (PgC)"
+    f_frozen = "Frozen permafrost fraction"
   )) %>%
   ggplot() +
   aes(x = year, y = value, linetype = scenario, color = RCP) +
