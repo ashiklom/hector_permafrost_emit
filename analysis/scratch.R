@@ -342,21 +342,76 @@ sum(m, na.rm = TRUE) / sum(!is.na(m))
 raster::plot(map1_r)
 
 ##################################################
+t2000 <- 0.812
+tmax <- 6
+kessler_line <- function(x) -0.172 * (x - t2000) + 1
+logistic <- function(x, pars) {
+  r <- pars[1]
+  p0 <- 0.01
+  if (length(pars) == 2) p0 <- pars[2]
+  k <- 1
+  n <- k * p0 * exp(x * r)
+  d <- k + p0 * (exp(x * r) - 1)
+  n / d
+}
+permfunc <- function(pars) {
+  x <- seq(t2000, tmax, 0.1)
+  yexp <- 1 - logistic(x, pars)
+  yline <- kessler_line(x)
+  sum((yline - yexp) ^ 2 * (1 / x^2))
+}
+fit <- optim(c(r = 1), permfunc)
+plot(0, 0, type = "n", xlim = c(0, 10), ylim = c(0, 1))
+curve(kessler_line(x), 0, 10, add = TRUE, lty = "dashed")
+curve(1 - logistic(x, fit$par), 0, 10, add = TRUE, col = "red")
+abline(h = 1.0, lty = "dotted")
+fit$par
+
+curve(1 - gen_log(x, c(0.037, 0.91, 1)), 0, 10)
+curve(gen_log(x, c(0.037, 0.91, 5)), 0, 10, add = TRUE, col = 2)
+curve(gen_log(x, c(0.037, 0.91, 10)), 0, 10, add = TRUE, col = 3)
+
+curve(1 - gen_log(x, c(1, -1, 1)), 0, 10)
+curve(gen_log(x, c(0.037, 0.91, 5)), 0, 10, add = TRUE, col = 2)
+curve(gen_log(x, c(0.037, 0.91, 10)), 0, 10, add = TRUE, col = 3)
+
+
 permfunc <- function(pars) {
   m <- pars[1]
   b <- pars[2]
-  x <- seq(2, 6, 0.1)
+  x <- seq(t2000, tmax, 0.1)
   yexp <- 1 / (1 + exp(m * x - b))
-  yline <- -0.172 * (x - 2) + 1
+  yline <- kessler_line(x)
   sum((yline - yexp) ^ 2)
 }
 fit <- optim(c(1.7, 8), permfunc)
 m <- fit$par[1]
 b <- fit$par[2]
 curve(1 / (1 + exp(m * x - b)), 0, 10, ylim = c(0, 1))
-abline(a = 2 * 0.172 + 1, b = -0.172)
-abline(v = c(2, 6), lty = "dashed")
+curve(kessler_line(x), 0, 10, lty = "dashed", add = TRUE)
+abline(v = c(t2000, tmax), lty = "dotted")
+abline(h = 1, lty = "dotted")
+
+permfunc <- function(pars) {
+  m <- pars[1]
+  b <- pars[2]
+  nu <- pars[3]
+  x <- seq(t2000, tmax, 0.1)
+  yexp <- 1 / (1 + (m * x - b) ^ nu)
+  yline <- kessler_line(x)
+  sum((yline - yexp) ^ 2)
+}
+fit <- optim(c(1.7, 8, 1), permfunc)
+m <- fit$par[1]
+b <- fit$par[2]
+nu <- fit$par[3]
+curve(1 / (1 + (m * x - b) ^ nu), 0, 10, ylim = c(0, 1))
+abline(a = t2000 * 0.172 + 1, b = -0.172)
+abline(v = c(t2000, tmax), lty = "dashed")
 abline(h = 1, lty = "dashed")
+
+
+curve(x * exp(0.1 * x), 0, 10)
 
 devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 run_rcp <- function(rcp) {
@@ -381,3 +436,67 @@ ggplot(r26) +
   aes(x = year, y = value, color = scenario) +
   geom_line() +
   facet_wrap(vars(variable), scales = "free_y")
+
+##################################################
+hc <- newcore(system.file("input", "hector_rcp45.ini", package = "hector"))
+invisible(run(hc))
+Tgav <- fetchvars(hc, 1750:2100, "Tgav")$value
+soilC <- fetchvars(hc, 1750:2100, SOIL_C())$value
+r <- -0.172 * Tgav
+
+ffrozen <- numeric(length(Tgav))
+fthawed <- numeric(length(Tgav))
+pfc <- numeric(length(Tgav))
+r <- numeric(length(Tgav))
+dthaw <- numeric(length(Tgav))
+pfc[1] <- 1035
+ffrozen[1] <- 1
+for (t in seq(2, length(Tgav))) {
+  if (t < 50) {
+    teff <- 0
+  } else {
+    teff <- mean(Tgav[t-49:t])
+  }
+  r[t] <- 0.04 * teff
+  dthaw[t] <- r[t] * ffrozen[t - 1]
+  ffrozen[t] <- ffrozen[t - 1] - dthaw[t]
+  pfc[t] <- pfc[t - 1] * (1 - dthaw[t])
+}
+par(mfrow = c(2, 1))
+plot(1750:2100, Tgav, type = 'l')
+plot(1750:2100, ffrozen, type = 'l', ylim = c(0, 1))
+
+##################################################
+
+pf_q <- 2.371
+pf_b <- -0.676
+pf_pow <- -3.6852
+f <- function(x) (1 + pf_q * exp(pf_b * x)) ^ pf_pow
+curve(1 - f(x), 0, 10)
+
+rsqrt <- function(x, n, r) {
+  num <- x
+  den <- (1 + x^n)^(1/r)
+  num / den
+}
+
+curve(exp(rsqrt(log(x), 2, 2)) / exp(1), 0.001, 5, ylim = c(0, 1))
+curve(log(1 / (1 + x)), 0, 10)
+
+mytanh <- function(x) (exp(2 * x) - 1) / (exp(2 * x) + 1)
+myfun <- function(x) x * mytanh(x)
+curve(myfun(x), 0.01, 6)
+
+curve((log(x) / sqrt(1 + log(x)^2)), 0, 3, ylim = c(0, 1))
+
+f <- function(x, r, p0) {
+  k <- 1
+  num <- k * p0 * exp(x * r)
+  denom <- k + p0 * (exp(x * r) - 1)
+  num / denom
+}
+curve(1 - f(x, 1, 0.001), 0, 10, ylim = c(0, 1))
+
+z <- 1
+y <- 0.1
+curve(1 - 1 * y^(1/z) * x * (1 + y * x^z) ^ (-1 / z), 0, 10, ylim = c(0, 1))
