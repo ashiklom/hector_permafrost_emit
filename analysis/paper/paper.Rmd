@@ -26,6 +26,9 @@ highlights: |
 library(drake)
 library(knitr)
 library(here)
+library(dplyr)
+library(ggplot2)
+library(hector.permafrost.emit)
 
 opts_chunk$set(
   collapse = TRUE,
@@ -35,7 +38,7 @@ opts_chunk$set(
   comment = "#>"
 )
 
-library(hector.permafrost.emit)
+devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 
 # Dummy target to force-rebuild this when figures change
 invisible(readd(figs_dir_t))
@@ -137,17 +140,17 @@ $$ R_{p} = C_p \times f_p \times Q_{10} ^ \frac{T}{10} $$
 
 The general principle is that permafrost constitutes an additional reserve of soil carbon that, because it is frozen, is inaccessible to microbes.
 As permafrost thaws and some fraction of this carbon becomes accessible to microbes, it is transferred from the frozen permafrost pool to the standard soil C pool, where it is decomposed by Hector's standard decomposition routine.
-Let $C[t]_{pf}$ be the permafrost C pool and $C[t]_{s}$ be the soil C pool at time $t$ (both in units of Pg C), and let $\Delta C[t]_{pf}$ be the change in the permafrost C pool at time $t$.
+Let $C_{pf}[t]$ be the permafrost C pool and $C_{s}[t]$ be the soil C pool at time $t$ (both in units of Pg C), and let $\Delta C_{pf}[t]$ be the change in the permafrost C pool at time $t$.
 The C consequences of permafrost thaw can therefore be represented as:
 
-\[ C[t]_{pf} = C[t-1]_{pf} - \Delta C[t]_{pf} \]
+\[ C_{pf}[t] = C_{pf}[t-1] - \Delta C_{pf}[t] \]
 
-\[ C[t]_{s} = C[t]_{s} + \Delta C[t]_{pf} \]
+\[ C_{s}[t] = C_{s}[t] + \Delta C_{pf}[t] \]
 
 Let $C[0]_{pf}$ be the initial size of the permafrost C pool (Pg C) and $\Phi[t]$ be the fraction of permafrost remaining (in arbitrary area or volume units) at time $t$.
-Assuming a uniform permafrost C density, $\Delta C[t]_{pf}$ can be expressed as:
+Assuming a uniform permafrost C density, $\Delta C_{pf}[t]$ can be expressed as:
 
-\[ \Delta C[t]_{pf} = \Phi[t] C[0]_{pf} \]
+\[ \Delta C_{pf}[t] = \Delta \Phi[t] C_{pf}[t-1] \]
 
 To a first approximation, $\Phi[t]$ is a function of air temperature ($T[t]_{air}$).
 [Kessler (2015)][kessler] assume this relationship is linear.
@@ -156,29 +159,43 @@ However, because the permafrost area fraction is, by definition, bounded by zero
 [^1]: Technically, permafrost area could increase in the case of cooling temperatures, and therefore the area fraction could be greater than 1. However, because even the most aggressive climate action scenarios show temperatures that stabilize above year 2000, we assume that permafrost area will never grow more than the starting value.
 
 \[
-\Phi[t] = \frac{1}{1 + \exp\left( m T[t]_{air} + b \right)}
+\Phi[t] = 1 - \left( 1 + a \exp\left( b * T_{air}[t] \right) \right) ^ c
 \]
 
-where $m$ and $b$ are model parameters.
-For globally-averaged permafrost, $m = 0.829$ and $b = 4.078$ most closely reproduce the rate of 0.172 K$^{-1}$ reported by [Kessler (2015)] over the range of 2 to 6 K$^{-1}$.
+where $a$, $b$, and $c$ are model parameters.
+The change in frozen fraction at a given time step, $\Delta \Phi[t]$, is given by:
+
+\[
+\Delta \Phi[t] = \max(\Phi[t] - \Phi[t-1], 0)
+\]
+
+In other words, permafrost thaw is permanent -- once it thaws, it does not re-freeze, even if the temperature drops.
+
+For globally-averaged permafrost, $a = 2.371$, $b = -0.676$, and $c = -3.685$ to most closely reproduce the rate of 0.172 K$^{-1}$ reported by [Kessler (2015)][kessler] over the range of 0.8 [^2] to 4 K above the pre-industrial baseline.
+
+[^2]: [Kessler (2015)][kessler] report this as temperature change from year 2000. 0.8 K is the warming since pre-industrial as estimated by the default Hector configuration.
 
 ```{r sigmoid, fig.cap = sigmoid_cap}
+
 sigmoid_cap <- paste(
   "Fraction of permafrost thaw as a function of change in",
   "global annual mean air temperature since pre-industrial (1750)."
 )
-m <- 0.829
+pfa <- 2.371
+pfb <- -0.676
+pfc <- -3.685
 b <- 4.078
 kessler_m <- 0.172
-kessler_b <- 2 * kessler_m + 1
-plot(0, 0, type = "n", xlim = c(0, 10), ylim = c(0, 1),
+kessler_b <- 0.8 * kessler_m + 1
+plot(0, 0, type = "n", xlim = c(0, 8), ylim = c(0, 1),
      xlab = expression(Delta * T[air] ~ (K)),
      ylab = "Frac. permafrost remaining")
-curve(1 / (1 + exp(m * x - b)), 0, 10, col = 1, add = TRUE)
+curve(1 - (1 + pfa * exp(pfb * x)) ^ pfc, 0, 10, col = 1, add = TRUE)
 abline(a = kessler_b, b = -kessler_m, lty = "dashed")
 abline(h = 1, lty = "dotted")
 legend("topright", c("Hector", "Kessler (2015)"), lty = c("solid","dashed"),
        bg = "white")
+
 ```
 
 [kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
@@ -191,34 +208,47 @@ Initial permafrost C is set to 1035 Pg C.
 
 ## Effect of permafrost C
 
-```{r permafrost-c, fig.cap = }
+```{r permafrost-c, fig.cap = permafrost_c_cap}
+
 permafrost_c_cap <- paste(
   "Effect of permafrost C emissions on scenarios."
 )
 
-devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 run_rcp <- function(rcp) {
   inidir <- file.path("~", "Projects", "hector_project",
                       "hector-permafrost-submodel", "inst", "input")
   inifile <- normalizePath(file.path(inidir, paste0("hector_rcp", rcp, ".ini")))
   stopifnot(file.exists(inifile))
   hc <- newcore(inifile)
-  run(hc)
   dates <- seq(1750, 2100)
-  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP())
+  run(hc, max(dates))
+  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP(), PERMAFROST_C(), SOIL_C())
   no_pf <- fetchvars(hc, dates, outvars, scenario = "Original")
   reset(hc)
-  setvar(hc, NA, PERMAFROST_C(), 1035, "PgC")
-  run(hc)
+  setvar(hc, 0, PERMAFROST_C(), 1035, "PgC")
+  run(hc, max(dates))
   yes_pf <- fetchvars(hc, dates, outvars, scenario = "Permafrost")
   return(tibble::as_tibble(dplyr::bind_rows(no_pf, yes_pf)))
 }
-r26 <- run_rcp("26")
-library(ggplot2)
-ggplot(r26) +
-  aes(x = year, y = value, color = scenario) +
+
+rcps <- c("26", "45", "60", "85")
+names(rcps) <- paste0("RCP", rcps)
+results <- purrr::map_dfr(rcps, run_rcp, .id = "RCP")
+
+results %>%
+  mutate(variable = recode(
+    variable,
+    Ca = "Atmospheric CO2 (ppm)",
+    Tgav = "Global mean temperature anomaly (K)",
+    permafrost_c = "Permafrost C pool (PgC)",
+    soil_c = "Soil C pool (PgC)"
+  )) %>%
+  ggplot() +
+  aes(x = year, y = value, linetype = scenario, color = RCP) +
   geom_line() +
-  facet_wrap(vars(variable), scales = "free_y")
+  facet_wrap(vars(variable), scales = "free_y") +
+  theme_bw() +
+  theme(axis.title = element_blank())
 
 ```
 
