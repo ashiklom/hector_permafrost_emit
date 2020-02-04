@@ -7,19 +7,31 @@
 
 ## Implications and relevance
 
-- Hazards and damage to infrastructure [@anisimov_1997_permafrost; @nelson_2002_climate]
+- Permafrost thaw modifies surface terrain and hydrology
+    - Erosion of coastal, lake, and river bluffs, and thawing ice wedges and erosion gullies (using multi-temporal LiDAR, along Alaska Beaufort Sea) [@jones_2013_quantifying]
+    - Development of gully networks (Bylot Island, Nunavut, Canada), with significant erosion and consequences for local hydrology including changes in channel configuration, flow rates, and hydrological connectivity [@godin_2014_effects]
+    - Changes in thermokarst lakes and transitions from high-center to low-center polygons due to ice wedge degradation (Kubuk Valley National Park, Alaska) [@necsoiu_2013_multitemporal]
+    - Leads to hazards and damage to infrastructure [@anisimov_1997_permafrost; @nelson_2002_climate]
 - Changes in wetland and lake abundance -- initial thaw leads to lake and wetland expansion, followed by widespread disappearance caused by "breaching" of permafrost [@smith_2005_disappearing]
+- Economic impacts
+    - Permafrost C feedback increases estimated economic impact of climate change by 4-5% (\$25-67 trillion; out to 2300), depending on scenario (using PAGE-ICE model) [@yumashev_2019_climate].
+    - CO2 and CH4 emissions from permafrost thaw lead to losses of \$2.5 (RCP4.5-SSP1) to \$12.7 (RCP 8.5-SSP3) trillion between 2010 and 2100 [@chen_2019_economic]
 
 ## Permafrost characteristics
 
+- Overall review of permafrost [@grosse_2016_changing] 
 - Spatial extent
-- 17% of Earth's exposed land surface -- 22 +/- 3 million km2 [@gruber_2012_derivation]
-- 10.5 million km2, estimated by CCSM3 in agreement with observations [@lawrence_2005_projection]
-- 24% of Northern Hemisphere land surface; 22.79 million km2 [@zhang_1999_statistics]
+    - 17% of Earth's exposed land surface -- 22 +/- 3 million km2 [@gruber_2012_derivation]
+    - 10.5 million km2, estimated by CCSM3 in agreement with observations [@lawrence_2005_projection]
+    - 24% of Northern Hemisphere land surface; 22.79 million km2 [@zhang_1999_statistics]
 - C storage
-- High-latitude soil organic matter pool is 1300 (1100 - 1500) Pg, with ~800 Pg in permafrost and ~500 Pg in non-frozen soils [@hugelius_2014_estimated].
-  - 65-70% (1035 +/- 150 Pg) in surface layer (0 - 3m) [@hugelius_2014_estimated] (compared to 2050 Pg organic C in the rest of the world; @jobbagy_2000_vertical).
-  - 25-30% in deeper soils (> 3 m), due to unique processes -- e.g. Siberia and Alaska were ice-free during last Ice Age, so they accumulated silt (loess) soils that buried large quantities of organic matter deep in permafrost [@strauss_2013_deep]
+    - High-latitude soil organic matter pool is 1300 (1100 - 1500) Pg, with ~800 Pg in permafrost and ~500 Pg in non-frozen soils [@hugelius_2014_estimated].
+    - 65-70% (1035 +/- 150 Pg) in surface layer (0 - 3m) [@hugelius_2014_estimated] (compared to 2050 Pg organic C in the rest of the world; @jobbagy_2000_vertical).
+    - 25-30% in deeper soils (> 3 m), due to unique processes -- e.g. Siberia and Alaska were ice-free during last Ice Age, so they accumulated silt (loess) soils that buried large quantities of organic matter deep in permafrost [@strauss_2013_deep]
+- Drivers of thaw variability
+    - Anthropogenic geological disturbance, such as geophysical exploration, increases thaw depths [@williams_2013_linear]
+    - Vegetation cover -- warm permafrost retained in areas with peat or thick organic mats [@james_2013_multidecadal]
+    - Snow cover and duration (including timing) [@marmy_2013_permafrost]
     
 ## C fluxes in permafrost landscapes
 
@@ -32,7 +44,7 @@
 ## Model predictions
   
 - Spatial extent
-  - By 2100, as little as 1 million km2 (10% of permafrost area), estimated by CCSM3 [@lawrence_2005_projection]
+    - By 2100, as little as 1 million km2 (10% of permafrost area), estimated by CCSM3 [@lawrence_2005_projection]
     
 ## Caveats
 
