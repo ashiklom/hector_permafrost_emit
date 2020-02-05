@@ -73,6 +73,12 @@ htmlfig <- function() {
 
 # Introduction
 
+Permafrost---soil that continuously remains below 0°C for at least two consecutive years---underlies an area of 22 (± 3) million km~2~, roughly 17% of the Earth's exposed land surface [@gruber_2012_derivation], and contains an estimated 1300 (1100-1500) Pg of organic carbon [@hugelius_2014_estimated].
+Recent increases in global air temperature [@ipcc_ar5_wg1], which are amplified at high latitudes [@pithan_2014_arctic], have resulted in widespread permafrost thaw [@romanovsky_2010_permafrost], and simulations from variety of climate and land surface models across a wide range of scenarios suggest that this trend will continue into the future [@koven_2013_analysis; @chadburn_2017_observation].
+Permafrost thaw can dramatically alter surface terrain and hydrology [@jones_2013_quantifying; @godin_2014_effects; @necsoiu_2013_multitemporal], with adverse consequences for human infrastructure in permafrost regions [@anisimov_1997_permafrost; @nelson_2002_climate; @larsen_2008_estimating].
+Moreover, as permafrost thaws, this carbon becomes available to microbes for decomposition, resulting in the production of CO~2~ and CH~4~ [@brown_2008_report; @romanovsky_2010_thermal; @bond-lamberty_2016_temperature] that could lead to further warming [@koven_2011_permafrost; @schuur_2015_climate].
+Accounting for this permafrost carbon-climate feedback generally increases projections of greenhouse gas concentrations and global temperatures (REFS) and increases estimates of the economic impact of climate change [@hope_2015_economic; @yumashev_2019_climate; @chen_2019_economic].
+
 Climate change is a problem [@ipcc_ar5_wg1].
 Important to reduce carbon emissions to meet temperature targets.
 The extent of anthropogenic emissions reduction depends on what how much help (or push-back) we get from the physical and biological Earth systems.
