@@ -30,7 +30,7 @@
     - 25-30% in deeper soils (> 3 m), due to unique processes -- e.g. Siberia and Alaska were ice-free during last Ice Age, so they accumulated silt (loess) soils that buried large quantities of organic matter deep in permafrost [@strauss_2013_deep]
 - Drivers of thaw variability
     - Anthropogenic geological disturbance, such as geophysical exploration, increases thaw depths [@williams_2013_linear]
-    - Vegetation cover -- warm permafrost retained in areas with peat or thick organic mats [@james_2013_multidecadal]
+    - Vegetation cover -- warm permafrost retained in areas with peat or thick organic mats [@james_2013_multidecadal] and similarly where there is a thicker organic layer (but not in deep organic soils, such as those in wetlands) [@johnson_2013_permafrost]
     - Snow cover and duration (including timing) [@marmy_2013_permafrost]
     
 ## C fluxes in permafrost landscapes
@@ -44,6 +44,7 @@
 ## Model predictions
   
 - Spatial extent
+    - 4.0 (1SD = 2.9-5.0) million km2 per deg C of global mean warming "at stabilization" [@chadburn_2017_observation] (based on methodology by @gruber_2012_derivation). This result is higher than results from CMIP5 models.
     - By 2100, as little as 1 million km2 (10% of permafrost area), estimated by CCSM3 [@lawrence_2005_projection]
     
 ## Caveats
