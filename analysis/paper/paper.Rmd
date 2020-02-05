@@ -79,56 +79,19 @@ Permafrost thaw can dramatically alter surface terrain and hydrology [@jones_201
 Moreover, as permafrost thaws, this carbon becomes available to microbes for decomposition, resulting in the production of CO~2~ and CH~4~ [@brown_2008_report; @romanovsky_2010_thermal; @bond-lamberty_2016_temperature] that could lead to further warming [@koven_2011_permafrost; @schuur_2015_climate].
 Accounting for this permafrost carbon-climate feedback generally increases projections of greenhouse gas concentrations and global temperatures (REFS) and increases estimates of the economic impact of climate change [@hope_2015_economic; @yumashev_2019_climate; @chen_2019_economic].
 
-Climate change is a problem [@ipcc_ar5_wg1].
-Important to reduce carbon emissions to meet temperature targets.
-The extent of anthropogenic emissions reduction depends on what how much help (or push-back) we get from the physical and biological Earth systems.
+The higher carbon emissions associated with warming-driven permafrost thaw may be offset by increases in primary productivity.
+Some studies based on meteorological tower measurements of carbon flux and optical remote sensing suggest that high-latitude ecosystems (mainly tundra and boreal forest) remain carbon-neutral or are even a small net carbon sink [@mcguire_2012_assessment; @welp_2016_increasing].
+However, other studies, based on different sets of flux measurements and airborne gas sampling, suggest that the high-latitude regions are a net carbon source [@belshe_2013_tundra; @commane_2017_carbon; @natali_2019_large].
+The uncertainty in the net high-latitude carbon flux may be driven by the heterogeneity of high-latitude landscapes in terms of vegetation cover, soil properties, topography, and many other factors known to affect both the rate of permafrost thaw and the subsequent carbon flux [@turetsky_2002_boreal; @wickland_2006_effects; @lund_2010_variability; @james_2013_multidecadal; @johnson_2013_permafrost; @grant_2019_modeling1; @grant_2019_modeling2].
+This uncertainty is also present in recent permafrost modeling studies [@burke_2017_quantifying; @qian_2010_enhanced; @ito_2016_impacts; @harp_2016_effect].
 
-Permafrost is an important C reservoir.
-The total northern soil C pool is estimated at 1672 PgC, of which approximately 1466 Pg (88%) is in permafrost [@tarnocai_2009_soil].
-More recent estimates suggest that total high-latitude soil organic matter pool is 1300 Pg, with roughly 800 Pg in permafrost [@hugelius_2014_estimated].
-This frozen C can be released into the atmosphere by several processes related to warming, including aerobic respiration in thawed soil (REF) and anaeribic respiration in thermokarst lakes and wetlands [@turetsky_2002_boreal; @wickland_2006_effects].
-But emissions from wet soils may be offset by high organic matter accumulation rates [@camill_2001_changes].
-Permafrost thaw in boreal peatlands in north-central Saskatchewan increased CO2 and CH4 fluxes from soil to atmosphere by 1.6 and 30 times, respectively [@turetsky_2002_boreal].
-These impacts are exacerbated by the fact that the Arctic is warming roughly 2.5 (TODO ???) times faster than the global average (TODO REF).
-Projections of permafrost C emissions vary.
-[@schuur_2009_effect] estimate 0.8 - 1.1 Pg C yr-1.
-Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
-10-40 g C m-3 day-1 off the bat, slowing down to equilibrium (?) rate of 0.5-5 g C m-3 day-1 for several years.
-
-Rapid methane release from arctic permafrost could potentially cause trillions in economic damage [@whiteman_2013_vast].
-
-On the other hand, warming and CO2 fertilization may increase vegetation productivity, which could increase soil C storage through enhanced litterfall; the balance of these two processes is uncertain [@jones_2005_global].
-There are additional uncertainties associated with vegetation composition (spatially variable peat accumulation) [@camill_2001_changes].
-Other large uncertainties related to soil properties and climate model structure [@harp_2016_effect].
-Several modeling studies generally predict increases in soil C sequestration at high latitudes [@burke_2017_quantifying; @qian_2010_enhanced; @ito_2016_impacts].
-However, this increase is dampened or even reversed when C emissions from permafrost thaw are included [@schaefer_2011_amount; @burke_2017_quantifying].
-
-The importance of Arctic climate feedbacks has led to efforts to incorporate these processes---particularly, permafrost thaw---into land surface models.
-Early efforts derived permafrost extent and C based purely on soil temperature [@lawrence_2005_projection].
-(More recent models have done this better...)
-@schaefer_2011_amount -- SiBCASA estimates 190 +/- 64 Gt C, but this does not include warming feedback or discontinuous permafrost regions.
-@harp_2016_effect -- Community Earth System Model (CESM) simulations over 100 years.
-[@burke_2017_quantifying] -- JULES and ORCHIDEE, with new permafrost scheme, combined with intermediate complexity climate-ocean model (IMOGEN), to look at climate sensitivity to permafrost C emissions.
-Models are highly sensitive to representation of soil processes, which can be more important than differences in scenario and/or climate drivers [@burke_2017_quantifying].
-But @harp_2016_effect argue that model structural uncertainty is larger than soil property uncertainty.
-
-Land surface models are expensive to run, making it challening to use them for uncertainty quantification and exploration of alternative policy scenarios.
+Land surface models are expensive to run, making it challenging to use them for uncertainty quantification and exploration of alternative policy scenarios.
 Simple climate models are an alternative.
 (More on simple climate models).
+(More on permafrost in simple climate models).
 
-(Previous attempts to incorporate permafrost into simple climate models.)
-
-Hector [@hartin_2015_simple].
-In this study, we use Hector to evaluate the global sensitivty of climate to terrestrial biosphere processes, and how this uncertainty is affected by permafrost emissions.
-The current version of Hector does not have an explicit representation of permafrost C emissions.
-In this study, we investigate whether the additional complexity and parametric and structural uncertainty of an explicit representation of permafrost may be warranted in Hector.
-To do this, we evaluate the sensitivity of climate variables (as predicted by Hector) to several different exogenous scenarios of permafrost C emissions.
-(TODO Modify this to be about economic impact)
-
-Some more relevant references:
-- [@zimov_2006_climate_change]
-- [@treat_2013_permafrost_carbon_bomb]
-- [@schuur_2015_climate; @schuur_2011_climate_change; @schaefer_2014_impact; @schaefer_2011_amount; @lee_2011_rate; @kuhry_2010_potential; @kessler_2017_estimating; @hope_2015_economic; @drake_2015_ancient; @burke_2017_quantifying]
+Hector [@hartin_2015_simple; @vega-westhoff_2019_impacts].
+In this study, we implement a simple representation of permafrost thaw and evaluate its consequences for global climate in Hector.
 
 # Methods
 
