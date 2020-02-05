@@ -3,7 +3,6 @@
 all: drake
 
 drake:
-	./analysis/scripts/getcitations.R
 	./analysis/drake.R make
 	rm -f Rplots.pdf
 
@@ -18,3 +17,7 @@ cluster:
 
 deploy:
 	./analysis/scripts/deploy-paper.sh
+
+paper: ./analysis/paper/paper.Rmd
+	./analysis/scripts/getcitations.R
+	Rscript -e "rmarkdown::render('analysis/paper/paper.Rmd')"
