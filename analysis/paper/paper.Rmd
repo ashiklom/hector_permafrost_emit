@@ -7,6 +7,7 @@ author:
   - Corinne Hartin
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
+    bookdown::pdf_document2:
     bookdown::html_document2:
       fig_caption: yes
       reference_docx: "../templates/template.docx"
@@ -123,22 +124,20 @@ Assuming a uniform permafrost C density, $\Delta C_{pf}[t]$ can be expressed as:
 
 To a first approximation, $\Phi[t]$ is a function of air temperature ($T[t]_{air}$).
 [Kessler (2015)][kessler] assume this relationship is linear.
-However, because the permafrost area fraction is, by definition, bounded by zero (and 1 [^1]), and because deeper permafrost thaws more slowly than shallow permafrost, we use a negative logistic relationship instead:
+However, because the permafrost area fraction is, by definition, bounded by zero (and 1 [^1]), and because deeper permafrost thaws more slowly than shallow permafrost, we use the lognormal cumulative distribution function ($NCDF(\log(x) | \mu, \sigma)$) instead:
 
 [^1]: Technically, permafrost area could increase in the case of cooling temperatures, and therefore the area fraction could be greater than 1. However, because even the most aggressive climate action scenarios show temperatures that stabilize above year 2000, we assume that permafrost area will never grow more than the starting value.
 
 \[
-\Phi[t] = 1 - \left( 1 + a \exp\left( b * T_{air}[t] \right) \right) ^ c
+\Phi[t] = 1 - NCDF(\log(x) | \mu, \sigma)
 \]
 
-where $a$, $b$, and $c$ are model parameters whose values are described in the _Configuration_ section below.
+where $\mu$ and $\sigma$ are model parameters whose values are described in the _Configuration_ section below.
 The change in frozen fraction at a given time step, $\Delta \Phi[t]$, is given by:
 
 \[
-\Delta \Phi[t] = \max(\Phi[t] - \Phi[t-1], 0)
+\Delta \Phi[t] = \Phi[t] - \Phi[t-1]
 \]
-
-In other words, permafrost thaw is permanent -- once it thaws, it does not re-freeze, even if the temperature drops.
 
 [kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
 
@@ -158,16 +157,14 @@ while soil respiraiton increases with the 200 year running mean of air temperatu
 
 \[ T_{air}[i,t] = \delta \, T_{air}[t] \]
 
-\[ RH_d[i,t] = \frac{1}{4} C_d Q_{10}[i] ^ {T}[i,t] / 10} \]
+\[ RH_d[i,t] = \frac{1}{4} C_d Q_{10}[i] ^ {{T}[i,t] / 10} \]
 
 \[ RH_s[i,t] = \frac{1}{50} C_s Q_{10}[i] ^ {T_{200}[i,t] / 10} \]
 
-In the original formulation, all of the total heterotrophic respiration was assumed to be CO~2~ and natural CH~4~ emissions were entirely separate.
-In the revised version here, total heterotrophic respiration is divided into CO~2~ ($RH_{CO_2}[i,t]$) and CH~4~ ($RH_{CH_4}[i,t]$) based on the biome-specific CH~4~ fraction parameter ($f_{CH_4}[i]$):
+In the original formulation, natural CH~4~ emissions were a prescribed constant value.
+In the revised version here, natural CH~4~ emissions are a fraction of heterotrophic respiration ($RH_{CH_4}[i,t]$) based on the biome-specific CH~4~ fraction parameter ($f_{CH_4}[i]$):
 
 \[ RH_{CH_4}[i,t] = f_{CH_4}[i] RH[i,t] \]
-
-\[ RH_{CO_2}[i,t] = (1 - f_{CH_4}[i]) RH[i,t] \]
 
 
 ## Configuration
