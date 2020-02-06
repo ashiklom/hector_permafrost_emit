@@ -260,19 +260,6 @@ Back-of-the-envelope estimates from [@zimov_2006_climate_change]:
 
 ## Parameter calibration
 
-We used the `BayesianTools` R package [@R-BayesianTools] for all parameter calibration.
-The outputs of these calibrations are joint posterior distributions of parameters and their covariances, from which we sample for the sensitivity analysis.
-
-For global parameters, we used the following likelihood:
-
-$$ \log(L) = \sum_s Normal(Hector(\beta, Q_{10}, s) | CMIP5(s), \sigma) $$
-
-where $s$ is one of the four representative carbon pathways (RCPs), $CMIP5(s)$ are the CMIP5 global mean outputs for the corresponding variables, and $\sigma$ is the model error (estimated during the fit).
-We also used the resulting distributions for $\beta$ and $Q_{10}$ for the non-permafrost biome in cases 2 and 3.
-We feel this is appropriate because the CMIP5 models against which these parameters are calibrated do not include permafrost C feedbacks.
-
-For case 2, we calibrated the permafrost-specific $\beta$ and $Q_{10}$ against various literature sources, including:
-
 - Land surface model simulations [@hope_2015_economic; @schaefer_2011_amount; @burke_2017_quantifying].
     - Try to calibrate against NPP and soil respiration if possible
 - Literature surveys [@schaefer_2014_impact] 
