@@ -131,7 +131,7 @@ However, because the permafrost area fraction is, by definition, bounded by zero
 \Phi[t] = 1 - \left( 1 + a \exp\left( b * T_{air}[t] \right) \right) ^ c
 \]
 
-where $a$, $b$, and $c$ are model parameters.
+where $a$, $b$, and $c$ are model parameters whose values are described in the _Configuration_ section below.
 The change in frozen fraction at a given time step, $\Delta \Phi[t]$, is given by:
 
 \[
@@ -140,7 +140,52 @@ The change in frozen fraction at a given time step, $\Delta \Phi[t]$, is given b
 
 In other words, permafrost thaw is permanent -- once it thaws, it does not re-freeze, even if the temperature drops.
 
-For globally-averaged permafrost, $a = 2.371$, $b = -0.676$, and $c = -3.685$ to most closely reproduce the rate of 0.172 K$^{-1}$ reported by [Kessler (2015)][kessler] over the range of 0.8 [^2] to 4 K above the pre-industrial baseline.
+[kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
+
+## Methane emissions
+
+In the default configuration of Hector, natural CH~4~ emissions are prescribed at a constant value (300 Tg year^-1^) [@hartin_2015_simple].
+In the new configuration, CH~4~ emissions are a fixed fraction of heterotrophic respiration.
+
+Total heterotrophic respiration ($RH[i,t]$) for biome $i$ at time $t$ is the sum of heterotrophic respiration in detritus ($RH_d$) and soil ($RH_s$).
+
+$$ RH[i,t] = RH_s[i,t] + RH_d[i,t] $$
+
+Detritus and soil heterotrophic respiration are proportional to the sizes of their respective carbon pools ($C_d$ and $C_s$, respectively, both in Pg C),
+with a rate that increases exponentially with temperature according to a biome-specific temperature sensitivity parameter ($Q_{10}$).
+Detritus respiration increases with biome-specific air temperature change since pre-industrial ($T[i,t]$),
+while soil respiraiton increases with the 200 year running mean of air temperature ($T_{200}[i,t]$) because soils warm slowly relative to the atmosphere.
+
+\[ T_{air}[i,t] = \delta \, T_{air}[t] \]
+
+\[ RH_d[i,t] = \frac{1}{4} C_d Q_{10}[i] ^ {T}[i,t] / 10} \]
+
+\[ RH_s[i,t] = \frac{1}{50} C_s Q_{10}[i] ^ {T_{200}[i,t] / 10} \]
+
+In the original formulation, all of the total heterotrophic respiration was assumed to be CO~2~ and natural CH~4~ emissions were entirely separate.
+In the revised version here, total heterotrophic respiration is divided into CO~2~ ($RH_{CO_2}[i,t]$) and CH~4~ ($RH_{CH_4}[i,t]$) based on the biome-specific CH~4~ fraction parameter ($f_{CH_4}[i]$):
+
+\[ RH_{CH_4}[i,t] = f_{CH_4}[i] RH[i,t] \]
+
+\[ RH_{CO_2}[i,t] = (1 - f_{CH_4}[i]) RH[i,t] \]
+
+
+## Configuration
+
+Initial permafrost C is set to 1035 Pg C based on the estimate for near-surface (<3 m depth) permafrost by @hugelius_2014_estimated.
+
+```{r params}
+# Permafrost exponential model
+pfa <- 2.371
+pfb <- -0.676
+pfc <- -3.685
+
+# Kessler linear model
+kessler_m <- 0.172
+kessler_b <- 0.8 * kessler_m + 1
+```
+
+For globally-averaged permafrost, exponential parameters $a = `r pfa`$, $b = `r pfb`$, and $c = `r pfc`$ to most closely reproduce the rate of `r kessler_m` K^-1^ reported by [Kessler (2015)][kessler] over the range of 0.8 [^2] to 4 K above the pre-industrial baseline.
 
 [^2]: [Kessler (2015)][kessler] report this as temperature change from year 2000. 0.8 K is the warming since pre-industrial as estimated by the default Hector configuration.
 
@@ -150,12 +195,6 @@ sigmoid_cap <- paste(
   "Fraction of permafrost thaw as a function of change in",
   "global annual mean air temperature since pre-industrial (1750)."
 )
-pfa <- 2.371
-pfb <- -0.676
-pfc <- -3.685
-b <- 4.078
-kessler_m <- 0.172
-kessler_b <- 0.8 * kessler_m + 1
 plot(0, 0, type = "n", xlim = c(0, 8), ylim = c(0, 1),
      xlab = expression(Delta * T[air] ~ (K)),
      ylab = "Frac. permafrost remaining")
@@ -167,11 +206,7 @@ legend("topright", c("Hector", "Kessler (2015)"), lty = c("solid","dashed"),
 
 ```
 
-[kessler]: https://econpapers.repec.org/RePEc:lsg:lsgwps:wp219
 
-## Configuration
-
-Initial permafrost C is set to 1035 Pg C.
 
 # Results
 
