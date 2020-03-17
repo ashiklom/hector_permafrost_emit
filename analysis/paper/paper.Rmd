@@ -28,6 +28,7 @@ library(knitr)
 library(here)
 library(dplyr)
 library(ggplot2)
+library(hector)
 
 opts_chunk$set(
   collapse = TRUE,
@@ -38,7 +39,6 @@ opts_chunk$set(
 )
 
 pkgload::load_all(here())
-pkgload::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 
 fig <- function(...) {
   filepath <- here("analysis", "figures", ...)
@@ -190,8 +190,7 @@ permafrost_c_cap <- paste(
 )
 
 run_rcp <- function(rcp) {
-  inidir <- file.path("~", "Projects", "hector_project",
-                      "hector-permafrost-submodel", "inst", "input")
+  inidir <- system.file("input", package = "hector")
   inifile <- normalizePath(file.path(inidir, paste0("hector_rcp", rcp, ".ini")))
   stopifnot(file.exists(inifile))
   hc <- newcore(inifile)
