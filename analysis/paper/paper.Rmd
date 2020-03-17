@@ -341,49 +341,6 @@ According to [@hartin_2015_simple], these were selected to be "generally consist
 
 ##### pagebreak
 
-# Appendix
-
-```{r fig-global-dist, fig.cap = global_dist_cap}
-global_dist_cap <- paste(
-  htmlfig(),
-  "Input parameter distributions for global Hector."
-)
-fig("global_draws.png")
-```
-
-`r mdcap(global_dist_cap)`
-
-```{r fig-biome-dist, fig.cap = biome_dist_cap, fig.dim = c(9, 9)}
-biome_dist_cap <- paste(
-  htmlfig(),
-  "Input parameter distributions for Hector with biomes."
-)
-fig("biome_draws.png")
-```
-
-`r mdcap(biome_dist_cap)`
-
-```{r fig-global-timeseries, fig.cap = global_ts_cap, fig.dim = c(10, 8)}
-global_ts_cap <- paste(
-  htmlfig(),
-  "Time series of Hector outputs for different parameter combinations."
-)
-readd(ts_global_sims)
-```
-
-`r mdcap(global_ts_cap)`
-
-```{r fig-biome-timeseries, fig.cap = biome_ts_cap, fig.dim = c(10, 8)}
-biome_ts_cap <- paste(
-  htmlfig(),
-  "Overall parameter uncertainty of Hector simulations with permafrost biome."
-)
-readd(ts_biome_sims)
-```
-
-`r mdcap(biome_ts_cap)`
-
-
 ### Colophon
 
 This report was generated on `r Sys.time()` using the following computational environment and dependencies: 
