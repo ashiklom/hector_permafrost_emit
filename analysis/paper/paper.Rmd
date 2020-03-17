@@ -24,7 +24,6 @@ highlights: |
 ---
 
 ```{r setup, echo = FALSE}
-library(drake)
 library(knitr)
 library(here)
 library(dplyr)
@@ -41,34 +40,9 @@ opts_chunk$set(
 pkgload::load_all(here())
 pkgload::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 
-# Dummy target to force-rebuild this when figures change
-invisible(readd(figs_dir_t))
-
 fig <- function(...) {
   filepath <- here("analysis", "figures", ...)
   knitr::include_graphics(file_in(filepath))
-}
-
-n <- 0
-mdcap <- function(text) {
-  n <<- n + 1
-  out <- sprintf("**Figure %d**: %s", n, text)
-  if (grepl("gfm", knitr::opts_knit$get("rmarkdown.pandoc.to"), ignore.case = TRUE)) {
-    out
-  } else {
-    invisible(NULL)
-  }
-}
-
-m <- 0
-htmlfig <- function() {
-  m <<- m + 1
-  out <- paste0("**Figure ", m, "**:")
-  if (grepl("html", knitr::opts_knit$get("rmarkdown.pandoc.to"), ignore.case = TRUE)) {
-    out
-  } else {
-    invisible(NULL)
-  }
 }
 ```
 
