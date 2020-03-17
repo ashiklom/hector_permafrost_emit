@@ -1,6 +1,7 @@
 ---
 title: "Hector Permafrost"
 author:
+  - Dawn Woodward
   - Alexey N. Shiklomanov
   - Ben Bond-Lamberty
   - Ben Kravitz
