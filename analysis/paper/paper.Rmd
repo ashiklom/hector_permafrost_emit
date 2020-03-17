@@ -29,7 +29,6 @@ library(knitr)
 library(here)
 library(dplyr)
 library(ggplot2)
-library(hector.permafrost.emit)
 
 opts_chunk$set(
   collapse = TRUE,
@@ -39,7 +38,8 @@ opts_chunk$set(
   comment = "#>"
 )
 
-devtools::load_all("~/Projects/hector_project/hector-permafrost-submodel")
+pkgload::load_all(here())
+pkgload::load_all("~/Projects/hector_project/hector-permafrost-submodel")
 
 # Dummy target to force-rebuild this when figures change
 invisible(readd(figs_dir_t))
